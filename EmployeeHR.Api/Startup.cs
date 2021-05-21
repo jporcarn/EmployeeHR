@@ -1,4 +1,7 @@
+using EmployeeHR.Dal;
 using EmployeeHR.EF;
+using EmployeeHR.Interfaces;
+using EmployeeHR.Logic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -33,6 +36,9 @@ namespace EmployeeHR.Api
             services.AddDbContext<EmployeeHRDbContext>(
                 options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection",
                         x => x.MigrationsAssembly("EmployeeHR.EF")));
+
+            services.AddScoped<IEmployeeDal, EmployeeDal>();
+            services.AddScoped<IEmployeeLogic, EmployeeLogic>();
 
             services.AddSwaggerGen(c =>
             {
