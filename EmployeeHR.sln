@@ -1,0 +1,30 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHR.Api", "EmployeeHR.Api\EmployeeHR.Api.csproj", "{F93EFCC9-D67C-4181-9604-7E0042069F0E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{645FA3EF-7303-4B6D-86A5-6537DE82C00C}"
+	ProjectSection(SolutionItems) = preProject
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F93EFCC9-D67C-4181-9604-7E0042069F0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F93EFCC9-D67C-4181-9604-7E0042069F0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F93EFCC9-D67C-4181-9604-7E0042069F0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F93EFCC9-D67C-4181-9604-7E0042069F0E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A1891979-4604-4CB6-B256-DD33A57BDE71}
+	EndGlobalSection
+EndGlobal
