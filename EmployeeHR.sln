@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitignore = .gitignore
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeHR.EF", "EmployeeHR.EF\EmployeeHR.EF.csproj", "{3B7421A1-7C61-414D-BD41-38AD9CD17ABC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{F93EFCC9-D67C-4181-9604-7E0042069F0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F93EFCC9-D67C-4181-9604-7E0042069F0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F93EFCC9-D67C-4181-9604-7E0042069F0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3B7421A1-7C61-414D-BD41-38AD9CD17ABC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3B7421A1-7C61-414D-BD41-38AD9CD17ABC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3B7421A1-7C61-414D-BD41-38AD9CD17ABC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3B7421A1-7C61-414D-BD41-38AD9CD17ABC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
