@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EmployeeHR.EF\EmployeeHR.EF.csproj" />
+    <ProjectReference Include="..\EmployeeHR.Interfaces\EmployeeHR.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>
