@@ -1,27 +1,27 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using EmployeeHR.Dal;
+using EmployeeHR.Logic;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EmployeeHR.Dal;
 using EmployeeHR.EF;
 using Microsoft.EntityFrameworkCore;
 
-namespace EmployeeHR.Dal.Tests
+namespace EmployeeHR.Logic.Tests
 {
     [TestClass()]
-    public class EmployeeDalTests
+    public class EmployeeLogicTests
     {
         [TestMethod()]
         public async Task GetAsyncTest()
         {
-            EmployeeHRDbContext dbContext = CreateDbContext();
-
-            var dal = new EmployeeDal(dbContext);
+            var dbContext = CreateDbContext();
+            var employeeDal = new EmployeeDal(dbContext);
+            var dal = new EmployeeLogic(employeeDal);
 
             var employees = await dal.GetAsync();
-
             Assert.IsNotNull(employees, "Employees can't be null");
         }
 
