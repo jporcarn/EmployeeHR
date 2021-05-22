@@ -1,1 +1,26 @@
-<p>employee works!</p>
+<h1>Employees</h1>
+<kendo-grid [data]="gridView" id="productsGrid" [loading]="loadingData" [reorderable]="true" [columnMenu]="true"
+    [resizable]="true" [sortable]="true" [pageable]="true" [filterable]="true" [skip]="gridCurrentState.skip"
+    [pageSize]="gridCurrentState.take" [sort]="gridCurrentState.sort" [filter]="gridCurrentState.filter"
+    [group]="gridCurrentState.group" kendoGridFocusable [kendoGridSelectBy]="'id'" [selectedKeys]="keysSelected"
+    [pageable]="{
+        buttonCount: 5,
+        info: true,
+        type: 'numeric',
+        pageSizes: false,
+        previousNext: true
+    }" (cellClick)="cellClickHandler($event)" (add)="addHandler()" (dataStateChange)="dataStateChangeHandler($event)">
+    <ng-template kendoGridToolbarTemplate>
+        <button kendoGridAddCommand *ngIf="!formGroup">Add new</button>
+        <div *ngIf="formGroup">
+            <button class="k-button" [disabled]="!formGroup.valid" (click)="saveRow()">Save</button>
+            <button class="k-button k-primary" (click)="cancelHandler()">Cancel</button>
+        </div>
+    </ng-template>
+    <kendo-grid-column field="id" title="Id" [editable]="false"></kendo-grid-column>
+    <kendo-grid-column field="firstName" title="First Name"></kendo-grid-column>
+    <kendo-grid-column field="lastName" title="Last Name"></kendo-grid-column>
+    <kendo-grid-column field="socialSecurityNumber" title="Social Security Number"></kendo-grid-column>
+    <kendo-grid-column field="phoneNumber" title="Phone Number"></kendo-grid-column>
+    <kendo-grid-column field="rowVersion" title="Row Version" [editable]="false" [hidden]="true"></kendo-grid-column>
+</kendo-grid>
