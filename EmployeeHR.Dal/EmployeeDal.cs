@@ -19,10 +19,27 @@ namespace EmployeeHR.Dal
             this._dbContext = dbContext;
         }
 
+        public async Task<Employee> AddAsync(Employee employee)
+        {
+            employee.Id = 0;
+            var entry = this._dbContext.Employee.Add(employee);
+            var n = await this._dbContext.SaveChangesAsync();
+
+            var employeeAdded = await this.GetByIdAsync(employee.Id);
+            return employeeAdded;
+        }
+
         public async Task<List<Employee>> GetAsync()
         {
             var employees = await this._dbContext.Employee.ToListAsync();
             return employees;
+        }
+
+        public async Task<Employee> GetByIdAsync(int id)
+        {
+            var employee = await this._dbContext.Employee.SingleOrDefaultAsync(e => e.Id == id);
+
+            return employee;
         }
     }
 }

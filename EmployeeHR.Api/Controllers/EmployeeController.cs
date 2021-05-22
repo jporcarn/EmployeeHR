@@ -1,4 +1,5 @@
-﻿using EmployeeHR.Interfaces;
+﻿using EmployeeHR.Dto;
+using EmployeeHR.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -33,28 +34,45 @@ namespace EmployeeHR.Api.Controllers
         }
 
         // GET api/<EmployeeController>/5
-        [HttpGet("{id}")]
-        public string GetByIdAsync(int id)
+        [HttpGet("{id:int}", Name = nameof(GetByIdAsync))]
+        public async Task<IActionResult> GetByIdAsync(int id)
         {
-            return "value";
+            var employee = await this._employeeLogic.GetByIdAsync(id);
+            if (employee == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(employee);
         }
 
         // POST api/<EmployeeController>
         [HttpPost]
-        public void PostAsync([FromBody] string value)
+        public async Task<IActionResult> PostAsync([FromBody] Employee employeeToAdd)
         {
+            if (!this.ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            var employeeAdded = await this._employeeLogic.AddAsync(employeeToAdd);
+
+            var result = CreatedAtRoute(nameof(GetByIdAsync), new { Id = employeeAdded.Id }, employeeAdded);
+            return result;
         }
 
         // PUT api/<EmployeeController>/5
         [HttpPut("{id}")]
         public void PutAsync(int id, [FromBody] string value)
         {
+            throw new NotImplementedException();
         }
 
         // DELETE api/<EmployeeController>/5
         [HttpDelete("{id}")]
         public void DeleteAsync(int id)
         {
+            throw new NotImplementedException();
         }
     }
 }

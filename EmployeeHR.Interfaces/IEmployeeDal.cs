@@ -9,6 +9,10 @@ namespace EmployeeHR.Interfaces
 {
     public interface IEmployeeDal
     {
+        Task<Employee> AddAsync(Employee employee);
+
         Task<List<Employee>> GetAsync();
+
+        Task<Employee> GetByIdAsync(int id);
     }
 }

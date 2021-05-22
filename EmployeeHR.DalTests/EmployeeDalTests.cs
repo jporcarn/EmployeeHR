@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using EmployeeHR.EF;
 using Microsoft.EntityFrameworkCore;
+using EmployeeHR.Dto;
 
 namespace EmployeeHR.Dal.Tests
 {
@@ -33,6 +34,44 @@ namespace EmployeeHR.Dal.Tests
             var options = optionsBuilder.Options;
             var dbContext = new EmployeeHRDbContext(options);
             return dbContext;
+        }
+
+        [TestMethod()]
+        public async Task GetByIdAsyncTest()
+        {
+            EmployeeHRDbContext dbContext = CreateDbContext();
+
+            var dal = new EmployeeDal(dbContext);
+
+            var employee = await dal.GetByIdAsync(1);
+
+            Assert.IsNotNull(employee);
+            Assert.IsTrue(employee.FirstName == "Palmer");
+            Assert.IsTrue(employee.LastName == "Matthew Hogan");
+        }
+
+        [TestMethod()]
+        public async Task AddAsyncTest()
+        {
+            EmployeeHRDbContext dbContext = CreateDbContext();
+
+            var dal = new EmployeeDal(dbContext);
+
+            var employeeToAdd = new Employee
+            {
+                Id = 0,
+                FirstName = "Test",
+                LastName = "Case",
+                SocialSecurityNumber = "12345678",
+                PhoneNumber = "000000000"
+            };
+
+            var employeeAdded = await dal.AddAsync(employeeToAdd);
+
+            Assert.IsNotNull(employeeAdded);
+            Assert.IsTrue(employeeAdded.Id > 0);
+            Assert.IsTrue(employeeAdded.FirstName == "Test");
+            Assert.IsTrue(employeeAdded.LastName == "Case");
         }
     }
 }
