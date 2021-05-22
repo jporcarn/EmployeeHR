@@ -54,8 +54,57 @@ export class EmployeeStoreService implements OnDestroy {
         return this._data.asObservable();
     }
 
-    save(value: Employee, isNew: boolean) {
+    save(e: Employee, isNew: boolean): void {
+        if (isNew) {
+            this.post(e);
+        }
+        else {
+            this.put(e.id, e);
+        }
+    }
+
+    private _add(item: Employee): number {
+
+        if (!this._dataValue) {
+            this._dataValue = [];
+        }
+
+        const n: number = this._dataValue.push(item);
+        return n;
+    }
+
+    private put(id: number | undefined, e: Employee) {
         throw new Error('Method not implemented.');
+    }
+
+    private post(item: Employee): void {
+
+        this._isLoading.next(true);
+
+        const itemToAdd = {} as Employee;
+        Object.assign(itemToAdd, item);
+
+        itemToAdd.id = 0;
+
+        this.subscription$.add(
+            this.service.post(itemToAdd).subscribe(
+                (employeeAdded: Employee) => {
+
+                    const n: number = this._add(employeeAdded);
+
+                    if (this._data) {
+                        this._data.next(this._dataValue);
+                    }
+
+                    this._isLoading.next(false);
+                },
+                (err: any) => {
+                    console.error(err);
+
+                    this._isLoading.next(false);
+                }
+            )
+        );
     }
 
 }

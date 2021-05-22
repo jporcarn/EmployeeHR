@@ -24,4 +24,16 @@ export class EmployeeService {
             );
 
     }
+
+    post(e: Employee): Observable<Employee> {
+        const url = `https://localhost:5001/api/employee`;
+
+        return this.http.post<Employee>(url, e)
+            .pipe(
+                catchError(e => {
+                    console.error(e);
+                    return throwError(e);
+                })
+            );
+    }
 }
