@@ -31,6 +31,30 @@ namespace EmployeeHR.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // ASP.NET Core’s CORS policies
+            services.AddCors(
+                (options) =>
+                {
+                    // CorsPolicy
+                    string allowedOrigins = this.Configuration.GetSection("Cors").GetValue<string>("AllowedOrigins");
+
+                    string[] origins = allowedOrigins?.Split(';', StringSplitOptions.RemoveEmptyEntries) ?? new string[] { };
+
+                    options.AddPolicy(name: "CorsPolicy",
+                        (builder) =>
+                        {
+                            builder
+                            .SetIsOriginAllowedToAllowWildcardSubdomains()
+                            .WithOrigins(origins)
+                            .AllowAnyMethod()
+                            .AllowAnyHeader()
+                            .AllowCredentials()
+                            .SetPreflightMaxAge(TimeSpan.FromSeconds(86400)); // CORS preflight request: Access-Control-Max-Age gives the value in seconds for how long the response to the preflight request can be cached for without sending another preflight request. In this case, 86400 seconds is 24 hours.
+                        }
+                    ); ;
+                }
+            );
+
             services.AddControllers();
 
             services.AddDbContext<EmployeeHRDbContext>(
@@ -59,6 +83,8 @@ namespace EmployeeHR.Api
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("CorsPolicy"); // ASP.NET Core’s CORS policies
 
             app.UseAuthorization();
 
