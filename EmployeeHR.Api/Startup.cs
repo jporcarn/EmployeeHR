@@ -38,7 +38,7 @@ namespace EmployeeHR.Api
                     // CorsPolicy
                     string allowedOrigins = this.Configuration.GetSection("Cors").GetValue<string>("AllowedOrigins");
 
-                    string[] origins = allowedOrigins?.Split(';', StringSplitOptions.RemoveEmptyEntries) ?? new string[] { };
+                    string[] origins = allowedOrigins?.Split(';', StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
 
                     options.AddPolicy(name: "CorsPolicy",
                         (builder) =>
