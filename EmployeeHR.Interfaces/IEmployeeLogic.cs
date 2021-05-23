@@ -14,5 +14,7 @@ namespace EmployeeHR.Interfaces
         Task<List<Employee>> GetAsync();
 
         Task<Employee> GetByIdAsync(int id);
+
+        Task<Employee> UpdateAsync(int id, Employee employee);
     }
 }

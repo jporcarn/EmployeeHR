@@ -25,21 +25,46 @@ namespace EmployeeHR.Dal
             var entry = this._dbContext.Employee.Add(employee);
             var n = await this._dbContext.SaveChangesAsync();
 
+            this._dbContext.Entry(employee).State = EntityState.Detached; // Untrack the instance of entity
+
             var employeeAdded = await this.GetByIdAsync(employee.Id);
             return employeeAdded;
         }
 
         public async Task<List<Employee>> GetAsync()
         {
-            var employees = await this._dbContext.Employee.ToListAsync();
+            var employees = await this._dbContext
+                .Employee
+                .AsNoTracking()
+                .ToListAsync();
             return employees;
         }
 
         public async Task<Employee> GetByIdAsync(int id)
         {
-            var employee = await this._dbContext.Employee.SingleOrDefaultAsync(e => e.Id == id);
+            var employee = await this._dbContext
+                .Employee
+                .AsNoTracking()
+                .SingleOrDefaultAsync(e => e.Id == id);
 
             return employee;
+        }
+
+        public async Task<Employee> UpdateAsync(Employee employee)
+        {
+            employee.RowVersion = System.DateTime.Now;
+
+            var entry = this._dbContext.Employee.Update(employee);
+
+            entry.Property(p => p.Id).IsModified = false;
+
+            var n = await this._dbContext.SaveChangesAsync();
+
+            this._dbContext.Entry(employee).State = EntityState.Detached; // Untrack the instance of entity
+
+            var employeeUpdated = await this.GetByIdAsync(employee.Id);
+
+            return employeeUpdated;
         }
     }
 }

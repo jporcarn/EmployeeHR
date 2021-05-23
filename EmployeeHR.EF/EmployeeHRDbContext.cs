@@ -47,7 +47,8 @@ namespace EmployeeHR.EF
                     .IsRequired()
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())")
-                    .IsConcurrencyToken();
+                    // .IsConcurrencyToken() // TODO: Set Concurrency Token // Microsoft.EntityFrameworkCore.DbUpdateConcurrencyException: Database operation expected to affect 1 row(s) but actually affected 0 row(s). Data may have been modified or deleted since entities were loaded.
+                    ;
             });
         }
     }

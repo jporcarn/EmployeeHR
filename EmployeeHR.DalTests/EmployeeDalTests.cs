@@ -48,6 +48,8 @@ namespace EmployeeHR.Dal.Tests
             Assert.IsNotNull(employee);
             Assert.IsTrue(employee.FirstName == "Palmer");
             Assert.IsTrue(employee.LastName == "Matthew Hogan");
+
+            Assert.IsTrue(employee.RowVersion.Date != System.DateTime.MinValue, "Row version hasn't been retrieved correctly");
         }
 
         [TestMethod()]
@@ -72,6 +74,39 @@ namespace EmployeeHR.Dal.Tests
             Assert.IsTrue(employeeAdded.Id > 0);
             Assert.IsTrue(employeeAdded.FirstName == "Test");
             Assert.IsTrue(employeeAdded.LastName == "Case");
+
+            Assert.IsTrue(employeeAdded.RowVersion.Date == System.DateTime.Now.Date, "Row version hasn't been either updated or retrieved correctly");
+        }
+
+        [TestMethod()]
+        public async Task UpdateAsyncTest()
+        {
+            EmployeeHRDbContext dbContext = CreateDbContext();
+
+            var dal = new EmployeeDal(dbContext);
+
+            var employeeToAdd = new Employee
+            {
+                Id = 0,
+                FirstName = "Test",
+                LastName = "Case",
+                SocialSecurityNumber = "12345678",
+                PhoneNumber = "000000000"
+            };
+
+            var employeeToUpdate = await dal.AddAsync(employeeToAdd);
+            var rowVersion = employeeToUpdate.RowVersion;
+
+            System.Threading.Thread.Sleep(1000); // wait for 1 second before attempting to update the record just created
+            employeeToUpdate.FirstName = "Test updated";
+            employeeToUpdate.LastName = "Case updated";
+
+            var employeeUpdated = await dal.UpdateAsync(employeeToUpdate);
+
+            Assert.IsTrue(employeeUpdated.Id == employeeToUpdate.Id);
+            Assert.IsTrue(employeeUpdated.FirstName == "Test updated");
+            Assert.IsTrue(employeeUpdated.LastName == "Case updated");
+            Assert.IsTrue(employeeUpdated.RowVersion >= rowVersion);
         }
     }
 }

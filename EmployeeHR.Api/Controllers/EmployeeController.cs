@@ -27,7 +27,7 @@ namespace EmployeeHR.Api.Controllers
 
             if (employees?.Count == 0)
             {
-                return NoContent();
+                return NotFound();
             }
 
             return Ok(employees);
@@ -35,12 +35,12 @@ namespace EmployeeHR.Api.Controllers
 
         // GET api/<EmployeeController>/5
         [HttpGet("{id:int}", Name = nameof(GetByIdAsync))]
-        public async Task<IActionResult> GetByIdAsync(int id)
+        public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
         {
             var employee = await this._employeeLogic.GetByIdAsync(id);
             if (employee == null)
             {
-                return NoContent();
+                return NotFound();
             }
 
             return Ok(employee);
@@ -62,10 +62,29 @@ namespace EmployeeHR.Api.Controllers
         }
 
         // PUT api/<EmployeeController>/5
-        [HttpPut("{id}")]
-        public void PutAsync(int id, [FromBody] string value)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> PutAsync([FromRoute] int id, [FromBody] Employee employee)
         {
-            throw new NotImplementedException();
+            if (!this.ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            try
+            {
+                var employeeUpdated = await this._employeeLogic.UpdateAsync(id, employee);
+
+                return Ok(employeeUpdated);
+            }
+            catch (CustomException ex)
+            {
+                return StatusCode((int)ex.StatusCode, employee);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, employee);
+                // throw;
+            }
         }
 
         // DELETE api/<EmployeeController>/5

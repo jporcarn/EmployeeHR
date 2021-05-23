@@ -39,5 +39,32 @@ namespace EmployeeHR.Logic
 
             return employee;
         }
+
+        public async Task<Employee> UpdateAsync(int id, Employee employee)
+        {
+            var employeeOriginal = await this._employeeDal.GetByIdAsync(id);
+
+            // Validations
+            if (employeeOriginal == null)
+            {
+                throw new CustomException($"Employee {id} not found") { StatusCode = System.Net.HttpStatusCode.NotFound };
+            }
+
+            if (employeeOriginal.Id != employee.Id)
+            {
+                throw new CustomException("Ids don't match") { StatusCode = System.Net.HttpStatusCode.BadRequest };
+            }
+
+            // Concurrency validation
+
+            if (employeeOriginal.RowVersion != employee.RowVersion)
+            {
+                throw new CustomException("Data has changed recently. Please refresh your data to get latest changes and try again") { StatusCode = System.Net.HttpStatusCode.Conflict };
+            }
+
+            var employeeUpdated = await this._employeeDal.UpdateAsync(employee);
+
+            return employeeUpdated;
+        }
     }
 }
