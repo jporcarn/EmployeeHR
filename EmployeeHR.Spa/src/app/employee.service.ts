@@ -9,6 +9,7 @@ import { Employee } from './employee';
 })
 export class EmployeeService {
 
+
     constructor(private http: HttpClient) { }
 
     get(): Observable<Employee[]> {
@@ -35,5 +36,15 @@ export class EmployeeService {
                     return throwError(e);
                 })
             );
+    }
+
+    put(id: number | undefined, e: Employee): Observable<Employee> {
+        const url = `https://localhost:5001/api/employee/${id}`;
+        return this.http.put<Employee>(url, e).pipe(
+            catchError(e => {
+                console.error(e);
+                return throwError(e);
+            })
+        );
     }
 }

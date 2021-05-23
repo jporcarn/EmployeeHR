@@ -73,10 +73,6 @@ export class EmployeeStoreService implements OnDestroy {
         return n;
     }
 
-    private put(id: number | undefined, e: Employee) {
-        throw new Error('Method not implemented.');
-    }
-
     private post(item: Employee): void {
 
         this._isLoading.next(true);
@@ -106,5 +102,43 @@ export class EmployeeStoreService implements OnDestroy {
             )
         );
     }
+
+    private _update(item: Employee) {
+        const e: Employee | undefined = this._dataValue?.find((value, index, arr) => { return value.id === item.id; });
+        if (e) {
+            Object.assign(e, item);
+        }
+
+        return e;
+    }
+
+    private put(id: number | undefined, item: Employee): void {
+
+        this._isLoading.next(true);
+
+        this.subscription$.add(
+            this.service.put(id, item)
+                .subscribe(
+                    (employeeUpdated: Employee) => {
+
+                        this._update(employeeUpdated);
+
+                        if (this._data) {
+                            this._data.next(this._dataValue); // send a copy of the array
+                        }
+
+                        this._isLoading.next(false);
+                    },
+                    (err: any) => {
+                        console.error(err);
+
+                        this._isLoading.next(false);
+                    }
+                )
+        );
+
+    }
+
+
 
 }
