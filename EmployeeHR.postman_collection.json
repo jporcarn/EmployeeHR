@@ -23,6 +23,106 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "GetAsync",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:5001/api/employee",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"employee"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PostAsync",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"firstName\": \"Post\",\r\n        \"lastName\": \"Man Test\",\r\n        \"socialSecurityNumber\": \"123456789 000\",\r\n        \"phoneNumber\": \"(0000) 000 0000\"\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5001/api/employee",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"employee"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetByIdAsync",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://localhost:5001/api/Employee/106",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"Employee",
+						"106"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PutAsync",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 106,\r\n    \"firstName\": \"Post\",\r\n    \"lastName\": \"Man Test 1\",\r\n    \"socialSecurityNumber\": \"123456789 000\",\r\n    \"phoneNumber\": \"(0000) 000 0000\",\r\n    \"rowVersion\": \"2021-05-23T12:20:17.55\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:5001/api/Employee/106",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "5001",
+					"path": [
+						"api",
+						"Employee",
+						"106"
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
