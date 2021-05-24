@@ -2,7 +2,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { BehaviorSubject, Observable, Subject, Subscription } from 'rxjs';
 import { Employee } from './employee';
 import { EmployeeService } from './employee.service';
-
+import { of } from 'rxjs';
 @Injectable({
     providedIn: 'root'
 })
@@ -10,13 +10,12 @@ export class EmployeeStoreService implements OnDestroy {
 
 
     private subscription$ = new Subscription();
-    private isLoadingValue = false;
-    private _isLoading: Subject<boolean> = new BehaviorSubject(this.isLoadingValue);
-    public readonly isLoading = this._isLoading.asObservable();
+    private _isLoading: Subject<boolean> = new BehaviorSubject<boolean>(false);
+    public readonly isLoading: Observable<boolean> = this._isLoading.asObservable();
 
-    private _dataValue: Employee[] | undefined;
+    private items: Employee[] | undefined;
     private _data: Subject<Employee[]> = new Subject<Employee[]>();
-
+    private data: Observable<Employee[]> = this._data.asObservable();
 
     constructor(private service: EmployeeService) { }
 
@@ -27,31 +26,32 @@ export class EmployeeStoreService implements OnDestroy {
     }
 
     get(): Observable<Employee[]> {
-        this._isLoading.next(true);
 
-        if (!this._dataValue) {
-            this.subscription$.add(
-                this.service.get().subscribe(
-                    (data: Employee[]) => {
-                        this._dataValue = data;
-
-                        this._data.next(this._dataValue);
-
-                        this._isLoading.next(false);
-                    },
-                    (err: any) => {
-                        console.error(err);
-                        this._isLoading.next(false);
-                    }
-                )
-            );
-        } else {
-
-            this._data.next(this._dataValue);
-            this._isLoading.next(false);
+        if (this.items) {
+            this.data = of(this.items);
+            return this.data;
         }
 
-        return this._data.asObservable();
+        this._isLoading.next(true);
+
+        this.subscription$.add(
+            this.service.get().subscribe(
+                (value: Employee[]) => {
+                    this.items = value;
+
+                    this._data.next(this.items);
+
+                    this._isLoading.next(false);
+                },
+                (err: any) => {
+                    console.error(err);
+                    this._isLoading.next(false);
+                }
+            )
+        );
+
+        this.data = this._data.asObservable();
+        return this.data;
     }
 
     save(e: Employee, isNew: boolean): void {
@@ -65,11 +65,11 @@ export class EmployeeStoreService implements OnDestroy {
 
     private _add(item: Employee): number {
 
-        if (!this._dataValue) {
-            this._dataValue = [];
+        if (!this.items) {
+            this.items = [];
         }
 
-        const n: number = this._dataValue.push(item);
+        const n: number = this.items.push(item);
         return n;
     }
 
@@ -89,7 +89,7 @@ export class EmployeeStoreService implements OnDestroy {
                     const n: number = this._add(employeeAdded);
 
                     if (this._data) {
-                        this._data.next(this._dataValue);
+                        this._data.next(this.items);
                     }
 
                     this._isLoading.next(false);
@@ -104,7 +104,7 @@ export class EmployeeStoreService implements OnDestroy {
     }
 
     private _update(item: Employee) {
-        const e: Employee | undefined = this._dataValue?.find((value, index, arr) => { return value.id === item.id; });
+        const e: Employee | undefined = this.items?.find((value, index, arr) => { return value.id === item.id; });
         if (e) {
             Object.assign(e, item);
         }
@@ -124,7 +124,7 @@ export class EmployeeStoreService implements OnDestroy {
                         this._update(employeeUpdated);
 
                         if (this._data) {
-                            this._data.next(this._dataValue); // send a copy of the array
+                            this._data.next(this.items); // send a copy of the array
                         }
 
                         this._isLoading.next(false);

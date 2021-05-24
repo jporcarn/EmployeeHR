@@ -69,6 +69,7 @@ export class EmployeeComponent implements OnInit, OnDestroy {
     constructor(private storeService: EmployeeStoreService, private renderer: Renderer2) { }
 
     public ngOnInit(): void {
+
         this.subscription$.add(
             this.storeService.isLoading.subscribe(
                 (loading: boolean) => {
@@ -81,16 +82,17 @@ export class EmployeeComponent implements OnInit, OnDestroy {
         );
 
         this.subscription$.add(
-            this.storeService.get().subscribe(
-                (employees: Employee[]) => {
-                    this.employees = employees;
+            this.storeService.get()
+                .subscribe(
+                    (employees: Employee[]) => {
+                        this.employees = employees;
 
-                    this.loadItems();
-                },
-                (err: any) => {
-                    console.error(err);
-                }
-            )
+                        this.loadItems();
+                    },
+                    (err: any) => {
+                        console.error(err);
+                    }
+                )
         );
 
         this.docClickSubscription = this.renderer.listen('document', 'click', this.onDocumentClick.bind(this));
