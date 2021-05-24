@@ -1,0 +1,67 @@
+<div class="container">
+    <button [routerLink]="['/employee']">Back</button>
+    <div [hidden]="submitted">
+        <h1>Employee Form</h1>
+        <form (ngSubmit)="onSubmit()" #employeeForm="ngForm">
+            <div class="form-group">
+                <label for="id">Id</label>
+                <input type="text" class="form-control" id="id" required [(ngModel)]="model.id" name="id" #id="ngModel">
+                <div [hidden]="id.valid || id.pristine" class="alert alert-danger">
+                    Id is required
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" class="form-control" id="firstName" [(ngModel)]="model.firstName" name="firstName">
+            </div>
+
+            <div class="form-group">
+                <label for="firstName">Last Name</label>
+                <input type="text" class="form-control" id="lastName" [(ngModel)]="model.lastName" name="lastName">
+            </div>
+
+            <div class="form-group">
+                <label for="socialSecurityNumber">Social Security Number</label>
+                <input type="text" class="form-control" id="socialSecurityNumber"
+                    [(ngModel)]="model.socialSecurityNumber" name="socialSecurityNumber">
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input type="text" class="form-control" id="phoneNumber" [(ngModel)]="model.phoneNumber"
+                    name="phoneNumber">
+            </div>
+
+            <button type="submit" class="btn btn-success" [disabled]="!employeeForm.form.valid">Submit</button>
+
+        </form>
+    </div>
+
+    <div [hidden]="!submitted">
+        <h2>You submitted the following:</h2>
+        <div class="row">
+            <div class="col-xs-3">Id</div>
+            <div class="col-xs-9">{{ model.id }}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3">Firs Name</div>
+            <div class="col-xs-9">{{ model.firstName }}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3">Last Name</div>
+            <div class="col-xs-9">{{ model.lastName }}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3">Social Security Number</div>
+            <div class="col-xs-9">{{ model.socialSecurityNumber }}</div>
+        </div>
+        <div class="row">
+            <div class="col-xs-3">Phone Number</div>
+            <div class="col-xs-9">{{ model.phoneNumber }}</div>
+        </div>
+
+        <br>
+        <button class="btn btn-primary" (click)="submitted=false">Edit</button>
+    </div>
+</div>

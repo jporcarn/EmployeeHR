@@ -12,6 +12,7 @@
     }" (cellClick)="cellClickHandler($event)" (add)="addHandler()" (dataStateChange)="dataStateChangeHandler($event)">
     <ng-template kendoGridToolbarTemplate>
         <button kendoGridAddCommand *ngIf="!formGroup">Add new</button>
+        <button class="btn" *ngIf="!formGroup" [routerLink]="['/employee/new']">Add new (Detail View)</button>
         <div *ngIf="formGroup">
             <button class="k-button" [disabled]="!formGroup.valid" (click)="saveRow()">Save</button>
             <button class="k-button k-primary" (click)="cancelHandler()">Cancel</button>

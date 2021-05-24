@@ -10,7 +10,8 @@ import { ErrorComponent } from './error/error.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { HttpClientModule } from '@angular/common/http';
-
+import { EmployeeDetailComponent } from './employee-detail/employee-detail.component';
+import { FormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -19,10 +20,12 @@ import { HttpClientModule } from '@angular/common/http';
         EmployeeComponent,
         ErrorComponent,
         NotFoundComponent,
-        LandingPageComponent
+        LandingPageComponent,
+        EmployeeDetailComponent
     ],
     imports: [
         BrowserModule,
+        FormsModule,
         AppRoutingModule,
         GridModule,
         BrowserAnimationsModule,
