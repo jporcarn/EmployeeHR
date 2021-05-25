@@ -5,7 +5,8 @@
         <form (ngSubmit)="onSubmit()" #employeeForm="ngForm">
             <div class="form-group">
                 <label for="id">Id</label>
-                <input type="text" class="form-control" id="id" required [(ngModel)]="model.id" name="id" #id="ngModel">
+                <input type="text" class="form-control" id="id" required [(ngModel)]="model.id" name="id" #id="ngModel"
+                    disabled>
                 <div [hidden]="id.valid || id.pristine" class="alert alert-danger">
                     Id is required
                 </div>
@@ -31,6 +32,12 @@
                 <label for="phoneNumber">Phone Number</label>
                 <input type="text" class="form-control" id="phoneNumber" [(ngModel)]="model.phoneNumber"
                     name="phoneNumber">
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">Last Modified</label>
+                <input type="text" class="form-control" id="rowVersion" [(ngModel)]="model.rowVersion" name="rowVersion"
+                    disabled>
             </div>
 
             <button type="submit" class="btn btn-success" [disabled]="!employeeForm.form.valid">Submit</button>
@@ -60,7 +67,10 @@
             <div class="col-xs-3">Phone Number</div>
             <div class="col-xs-9">{{ model.phoneNumber }}</div>
         </div>
-
+        <div class="row">
+            <div class="col-xs-3">Last Modified</div>
+            <div class="col-xs-9">{{ model.rowVersion }}</div>
+        </div>
         <br>
         <button class="btn btn-primary" (click)="submitted=false">Edit</button>
     </div>

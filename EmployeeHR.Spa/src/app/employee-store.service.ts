@@ -37,7 +37,7 @@ export class EmployeeStoreService implements OnDestroy {
         this.subscription$.add(
             this.service.get().subscribe(
                 (value: Employee[]) => {
-                    this.items = value;
+                    this.items = this.convertItems(value);
 
                     this._data.next(this.items);
 
@@ -86,7 +86,7 @@ export class EmployeeStoreService implements OnDestroy {
             this.service.post(itemToAdd).subscribe(
                 (employeeAdded: Employee) => {
 
-                    const n: number = this._add(employeeAdded);
+                    const n: number = this._add(this.convertItem(employeeAdded));
 
                     if (this._data) {
                         this._data.next(this.items);
@@ -121,7 +121,7 @@ export class EmployeeStoreService implements OnDestroy {
                 .subscribe(
                     (employeeUpdated: Employee) => {
 
-                        this._update(employeeUpdated);
+                        this._update(this.convertItem(employeeUpdated));
 
                         if (this._data) {
                             this._data.next(this.items); // send a copy of the array
@@ -139,6 +139,24 @@ export class EmployeeStoreService implements OnDestroy {
 
     }
 
+    private convertItems(items: Employee[]): Employee[] {
 
+        items.map(
+            (e: Employee) => {
+                return this.convertItem(e);
+            }
+        );
+
+        return items;
+    }
+
+    private convertItem(item: Employee): Employee {
+
+        if (typeof item.rowVersion === 'string') {
+            item.rowVersion = new Date(item.rowVersion);
+        }
+
+        return item;
+    }
 
 }
