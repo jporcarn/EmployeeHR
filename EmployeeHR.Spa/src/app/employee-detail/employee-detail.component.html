@@ -1,5 +1,5 @@
 <div class="container">
-    <button [routerLink]="['/employee']">Back</button>
+    <button class="btn" [routerLink]="['/employee']">Back</button>
     <div [hidden]="submitted">
         <h1>Employee Form</h1>
         <form (ngSubmit)="onSubmit()" #employeeForm="ngForm">
