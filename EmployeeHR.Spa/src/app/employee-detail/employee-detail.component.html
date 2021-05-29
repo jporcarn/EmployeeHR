@@ -1,5 +1,8 @@
 <div class="container">
-    <button class="btn" [routerLink]="['/employee']">Back</button>
+    <button class="btn" [routerLink]="['/employee']">
+        <i class="fas fa-arrow-left"></i><span>Back</span>
+    </button>
+
     <div [hidden]="submitted">
         <h1>Employee Form</h1>
         <form (ngSubmit)="onSubmit()" #employeeForm="ngForm">
@@ -35,9 +38,10 @@
             </div>
 
             <div class="form-group">
-                <label for="phoneNumber">Last Modified</label>
-                <input type="text" class="form-control" id="rowVersion" [(ngModel)]="model.rowVersion" name="rowVersion"
-                    disabled>
+                <label for="rowVersion">Last Modified</label>
+                <kendo-datepicker id="rowVersion" name="rowVersion" class="form-control" [(ngModel)]="model.rowVersion"
+                    [disabled]="true">
+                </kendo-datepicker>
             </div>
 
             <button type="submit" class="btn btn-success" [disabled]="!employeeForm.form.valid">Submit</button>

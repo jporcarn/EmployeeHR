@@ -12,6 +12,9 @@ import { LandingPageComponent } from './landing-page/landing-page.component';
 import { HttpClientModule } from '@angular/common/http';
 import { EmployeeDetailComponent } from './employee-detail/employee-detail.component';
 import { FormsModule } from '@angular/forms';
+import { IntlModule } from "@progress/kendo-angular-intl";
+import { DateInputsModule } from "@progress/kendo-angular-dateinputs";
+import { LabelModule } from "@progress/kendo-angular-label";
 
 
 @NgModule({
@@ -29,7 +32,10 @@ import { FormsModule } from '@angular/forms';
         AppRoutingModule,
         GridModule,
         BrowserAnimationsModule,
-        HttpClientModule
+        HttpClientModule,
+        IntlModule,
+        LabelModule,
+        DateInputsModule,
     ],
     providers: [],
     bootstrap: [AppComponent]
