@@ -13,9 +13,12 @@ export class EmployeeDetailComponent implements OnInit, OnDestroy {
     submitted = false;
 
     onSubmit() {
+
+        this.isNew = this.isNew = isNaN(this.route.snapshot.params['id']);
         this.submitted = true;
-        this.isNew = false;
+
         this.storeService.save(this.model, this.isNew);
+
     }
 
     private subscription$: Subscription = new Subscription();

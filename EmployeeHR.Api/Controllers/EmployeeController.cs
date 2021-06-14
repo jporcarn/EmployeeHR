@@ -57,7 +57,7 @@ namespace EmployeeHR.Api.Controllers
 
             var employeeAdded = await this._employeeLogic.AddAsync(employeeToAdd);
 
-            var result = CreatedAtRoute(nameof(GetByIdAsync), new { Id = employeeAdded.Id }, employeeAdded);
+            var result = CreatedAtRoute(nameof(GetByIdAsync), new { employeeAdded.Id }, employeeAdded);
             return result;
         }
 
@@ -78,11 +78,11 @@ namespace EmployeeHR.Api.Controllers
             }
             catch (CustomException ex)
             {
-                return StatusCode((int)ex.StatusCode, employee);
+                return StatusCode((int)ex.StatusCode, new { Error = ex.Message, Result = employee });
             }
             catch (Exception ex)
             {
-                return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, employee);
+                return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, new { Error = ex.Message, Result = employee });
                 // throw;
             }
         }

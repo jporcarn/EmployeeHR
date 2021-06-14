@@ -11,7 +11,8 @@
         type: 'numeric',
         pageSizes: false,
         previousNext: true
-    }" (cellClick)="cellClickHandler($event)" (add)="addHandler()" (dataStateChange)="dataStateChangeHandler($event)">
+    }" (add)="addHandler()" (edit)="editHandler($event)" (cancel)="cancelHandler()" (save)="saveHandler($event)"
+        (remove)="removeHandler($event)" (dataStateChange)="dataStateChangeHandler($event)">
         <ng-template kendoGridToolbarTemplate>
             <button kendoGridAddCommand *ngIf="!formGroup">Add new</button>
             <button class="btn" *ngIf="!formGroup" [routerLink]="['/employee/new']">Add new (Detail View)</button>
@@ -20,12 +21,31 @@
                 <button class="k-button k-primary" (click)="cancelHandler()">Cancel</button>
             </div>
         </ng-template>
+        <kendo-grid-command-column title="" [width]="220">
+            <ng-template kendoGridCellTemplate let-isNew="isNew">
+                <button kendoGridEditCommand [primary]="true">Edit</button>
+                <button kendoGridRemoveCommand>Remove</button>
+                <button kendoGridSaveCommand [disabled]="formGroup?.invalid || false">
+                    {{ isNew ? "Add" : "Update" }}
+                </button>
+                <button kendoGridCancelCommand>
+                    {{ isNew ? "Discard changes" : "Cancel" }}
+                </button>
+            </ng-template>
+        </kendo-grid-command-column>
         <kendo-grid-column field="id" title="Id" [editable]="false"></kendo-grid-column>
         <kendo-grid-column field="firstName" title="First Name"></kendo-grid-column>
         <kendo-grid-column field="lastName" title="Last Name"></kendo-grid-column>
         <kendo-grid-column field="socialSecurityNumber" title="Social Security Number"></kendo-grid-column>
         <kendo-grid-column field="phoneNumber" title="Phone Number"></kendo-grid-column>
         <kendo-grid-column field="rowVersion" title="Row Version" [editable]="false" [hidden]="true">
+            <ng-template kendoGridFilterCellTemplate let-filter let-column="column">
+                <kendo-grid-date-filter-cell [column]="column" [filter]="filter">
+                </kendo-grid-date-filter-cell>
+            </ng-template>
+            <ng-template kendoGridCellTemplate let-dataItem="dataItem">
+                <kendo-datepicker [disabled]="true" [value]="dataItem.rowVersion"></kendo-datepicker>
+            </ng-template>
         </kendo-grid-column>
     </kendo-grid>
 

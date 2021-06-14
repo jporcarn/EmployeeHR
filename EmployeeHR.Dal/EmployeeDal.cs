@@ -22,8 +22,8 @@ namespace EmployeeHR.Dal
         public async Task<Employee> AddAsync(Employee employee)
         {
             employee.Id = 0;
-            var entry = this._dbContext.Employee.Add(employee);
-            var n = await this._dbContext.SaveChangesAsync();
+            this._dbContext.Employee.Add(employee);
+            await this._dbContext.SaveChangesAsync();
 
             this._dbContext.Entry(employee).State = EntityState.Detached; // Untrack the instance of entity
 
@@ -52,8 +52,6 @@ namespace EmployeeHR.Dal
 
         public async Task<Employee> UpdateAsync(Employee employee)
         {
-            employee.RowVersion = System.DateTime.Now;
-
             var entry = this._dbContext.Employee.Update(employee);
 
             entry.Property(p => p.Id).IsModified = false;

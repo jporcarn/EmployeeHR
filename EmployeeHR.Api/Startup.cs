@@ -55,7 +55,11 @@ namespace EmployeeHR.Api
                 }
             );
 
-            services.AddControllers();
+            services.AddControllers()
+                .AddNewtonsoftJson((options) =>
+                {
+                    options.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
+                });
 
             services.AddDbContext<EmployeeHRDbContext>(
                 options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection",

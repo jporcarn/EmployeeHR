@@ -167,6 +167,8 @@ namespace EmployeeHR.Logic.Tests
             var employeeInOtherThread = await logic.GetByIdAsync(1);
             var employeeInOtherThreadUpdated = await logic.UpdateAsync(employeeInOtherThread.Id, employeeInOtherThread);
 
+            Assert.IsNotNull(employeeInOtherThreadUpdated, "Employee updated in other thread shoudn't be null");
+
             try
             {
                 var employeeUpdated = await logic.UpdateAsync(1, employeeToUpdate);

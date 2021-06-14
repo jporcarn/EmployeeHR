@@ -59,7 +59,7 @@ export class EmployeeComponent implements OnInit, OnDestroy {
     public formGroup: FormGroup | undefined;
 
     private editedRowIndex: number | undefined;
-    private docClickSubscription: any;
+
     private isNew = false;
 
     private subscription$ = new Subscription();
@@ -95,11 +95,9 @@ export class EmployeeComponent implements OnInit, OnDestroy {
                 )
         );
 
-        this.docClickSubscription = this.renderer.listen('document', 'click', this.onDocumentClick.bind(this));
     }
 
     public ngOnDestroy(): void {
-        this.docClickSubscription();
 
         if (this.subscription$) {
             this.subscription$.unsubscribe();
@@ -145,21 +143,25 @@ export class EmployeeComponent implements OnInit, OnDestroy {
         }
     }
 
-    public cellClickHandler({ isEdited, dataItem, rowIndex }: { isEdited: boolean; dataItem: Employee; rowIndex: number }): void {
-        if (isEdited || (this.formGroup && !this.formGroup.valid)) {
-            return;
-        }
+    public editHandler({ sender, rowIndex, dataItem }: { sender: GridComponent, rowIndex: number, dataItem: Employee }) {
+        this.closeEditor();
 
-        if (this.isNew) {
-            rowIndex += 1;
-        }
+        this.formGroup = createFormGroup(dataItem);
+
+        this.editedRowIndex = rowIndex;
+
+        sender.editRow(rowIndex, this.formGroup);
+    }
+
+    public saveHandler({ sender, rowIndex, formGroup, isNew }: { sender: GridComponent, rowIndex: number, formGroup: FormGroup, isNew: boolean }) {
 
         this.saveCurrent();
 
-        this.formGroup = createFormGroup(dataItem);
-        this.editedRowIndex = rowIndex;
+        sender.closeRow(rowIndex);
+    }
 
-        this.grid.editRow(rowIndex, this.formGroup);
+    public removeHandler({ dataItem }: { dataItem: Employee }) {
+        this.storeService.delete(dataItem);
     }
 
     public cancelHandler(): void {
@@ -172,12 +174,6 @@ export class EmployeeComponent implements OnInit, OnDestroy {
         this.isNew = false;
         this.editedRowIndex = undefined;
         this.formGroup = undefined;
-    }
-
-    private onDocumentClick(e: any): void {
-        if (this.formGroup && this.formGroup.valid && !matches(e.target, '#productsGrid tbody *, #productsGrid .k-grid-toolbar .k-button')) {
-            this.saveCurrent();
-        }
     }
 
     private saveCurrent(): void {

@@ -8,7 +8,6 @@ import { of } from 'rxjs';
 })
 export class EmployeeStoreService implements OnDestroy {
 
-
     private subscription$ = new Subscription();
     private _isLoading: Subject<boolean> = new BehaviorSubject<boolean>(false);
     public readonly isLoading: Observable<boolean> = this._isLoading.asObservable();
@@ -159,4 +158,7 @@ export class EmployeeStoreService implements OnDestroy {
         return item;
     }
 
+    delete(dataItem: Employee) {
+        throw new Error('Method not implemented.');
+    }
 }
