@@ -26,6 +26,32 @@ namespace EmployeeHR.Logic
             return employeeAdded;
         }
 
+        public async Task<int> DeleteAsync(int id, Employee employee)
+        {
+            var employeeOriginal = await this._employeeDal.GetByIdAsync(id);
+
+            // Validations
+            if (employeeOriginal == null)
+            {
+                throw new CustomException($"Employee {id} not found") { StatusCode = System.Net.HttpStatusCode.NotFound };
+            }
+
+            if (employeeOriginal.Id != employee.Id)
+            {
+                throw new CustomException("Ids don't match") { StatusCode = System.Net.HttpStatusCode.BadRequest };
+            }
+
+            // Concurrency validation. Avoid data base update
+            if (employeeOriginal.RowVersion != employee.RowVersion)
+            {
+                throw new CustomException("Data has changed recently. Please refresh your data to get latest changes and try again") { StatusCode = System.Net.HttpStatusCode.Conflict };
+            }
+
+            int affectedRecords = await this._employeeDal.DeleteAsync(employee);
+
+            return affectedRecords;
+        }
+
         public async Task<List<Employee>> GetAsync()
         {
             var employees = await this._employeeDal.GetAsync();
@@ -55,7 +81,7 @@ namespace EmployeeHR.Logic
                 throw new CustomException("Ids don't match") { StatusCode = System.Net.HttpStatusCode.BadRequest };
             }
 
-            // Concurrency validation
+            // Concurrency validation. Avoid data base update
 
             if (employeeOriginal.RowVersion != employee.RowVersion)
             {

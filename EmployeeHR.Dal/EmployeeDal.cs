@@ -31,6 +31,15 @@ namespace EmployeeHR.Dal
             return employeeAdded;
         }
 
+        public async Task<int> DeleteAsync(Employee employee)
+        {
+            this._dbContext.Employee.Remove(employee);
+
+            int affectedRecords = await this._dbContext.SaveChangesAsync();
+
+            return affectedRecords;
+        }
+
         public async Task<List<Employee>> GetAsync()
         {
             var employees = await this._dbContext

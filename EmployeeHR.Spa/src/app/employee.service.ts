@@ -9,8 +9,25 @@ import { Employee } from './employee';
 })
 export class EmployeeService {
 
-
     constructor(private http: HttpClient) { }
+
+    delete(item: Employee): Observable<number> {
+        const url = `https://localhost:5001/api/employee/${item.id}`;
+
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json',
+            }),
+            body: item,
+        };
+
+        return this.http.delete<number>(url, httpOptions).pipe(
+            catchError(e => {
+                console.error(e);
+                return throwError(e);
+            })
+        );
+    }
 
     get(): Observable<Employee[]> {
 

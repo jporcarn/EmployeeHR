@@ -88,10 +88,24 @@ namespace EmployeeHR.Api.Controllers
         }
 
         // DELETE api/<EmployeeController>/5
-        [HttpDelete("{id}")]
-        public void DeleteAsync(int id)
+        [HttpDelete("{id:int}")]
+        public async Task<IActionResult> DeleteAsync(int id, [FromBody] Employee employee)
         {
-            throw new NotImplementedException();
+            try
+            {
+                int affectedRecords = await this._employeeLogic.DeleteAsync(id, employee);
+
+                return Ok(affectedRecords);
+            }
+            catch (CustomException ex)
+            {
+                return StatusCode((int)ex.StatusCode, new { Error = ex.Message, Result = employee });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)System.Net.HttpStatusCode.InternalServerError, new { Error = ex.Message, Result = employee });
+                // throw;
+            }
         }
     }
 }

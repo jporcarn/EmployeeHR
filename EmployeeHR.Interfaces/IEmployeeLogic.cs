@@ -16,5 +16,7 @@ namespace EmployeeHR.Interfaces
         Task<Employee> GetByIdAsync(int id);
 
         Task<Employee> UpdateAsync(int id, Employee employee);
+
+        Task<int> DeleteAsync(int id, Employee employee);
     }
 }

@@ -180,5 +180,87 @@ namespace EmployeeHR.Logic.Tests
                 Assert.IsTrue(ex.StatusCode == System.Net.HttpStatusCode.Conflict);
             }
         }
+
+        [TestMethod()]
+        public async Task DeleteAsyncTest()
+        {
+            var dbContext = CreateDbContext();
+            var employeeDal = new EmployeeDal(dbContext);
+            var logic = new EmployeeLogic(employeeDal);
+
+            var employeeToAdd = new Employee
+            {
+                Id = 0,
+                FirstName = "Test",
+                LastName = "Case",
+                SocialSecurityNumber = "12345678",
+                PhoneNumber = "000000000"
+            };
+
+            var employeeAdded = await logic.AddAsync(employeeToAdd);
+            Assert.IsNotNull(employeeAdded);
+
+            try
+            {
+                int affectedRecords = await logic.DeleteAsync(employeeAdded.Id, employeeAdded);
+
+                Assert.IsTrue(affectedRecords > 0, "Affected records shoud be higher than 0");
+            }
+            catch (CustomException ex)
+            {
+                Assert.IsTrue(ex.StatusCode == System.Net.HttpStatusCode.Conflict);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
+
+        [TestMethod()]
+        public async Task DeleteAsyncNegativeTest1()
+        {
+            var dbContext = CreateDbContext();
+            var employeeDal = new EmployeeDal(dbContext);
+            var logic = new EmployeeLogic(employeeDal);
+
+            var employeeToAdd = new Employee
+            {
+                Id = 0,
+                FirstName = "Test",
+                LastName = "Case",
+                SocialSecurityNumber = "12345678",
+                PhoneNumber = "000000000"
+            };
+
+            var employeeAdded = await logic.AddAsync(employeeToAdd);
+            Assert.IsNotNull(employeeAdded);
+
+            // simulate some other user updates same employee before me
+            var rowVersion = employeeAdded.RowVersion;
+
+            System.Threading.Thread.Sleep(1000); // Sleep for 1 second
+
+            var employeeInOtherThread = await logic.GetByIdAsync(employeeAdded.Id);
+            var employeeInOtherThreadUpdated = await logic.UpdateAsync(employeeInOtherThread.Id, employeeInOtherThread);
+
+            Assert.IsFalse(rowVersion == employeeInOtherThreadUpdated.RowVersion, "Row version has not been updated accordingly");
+
+            Assert.IsNotNull(employeeInOtherThreadUpdated, "Employee updated in other thread shoudn't be null");
+
+            try
+            {
+                int affectedRecords = await logic.DeleteAsync(employeeAdded.Id, employeeAdded);
+
+                Assert.Fail("Employee shoudn't have been updated");
+            }
+            catch (CustomException ex)
+            {
+                Assert.IsTrue(ex.StatusCode == System.Net.HttpStatusCode.Conflict);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
     }
 }

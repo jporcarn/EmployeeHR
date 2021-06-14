@@ -158,7 +158,36 @@ export class EmployeeStoreService implements OnDestroy {
         return item;
     }
 
-    delete(dataItem: Employee) {
-        throw new Error('Method not implemented.');
+    private _delete(item: Employee) {
+
+        const index = this.items?.findIndex((e) => { return e.id === item.id }) || -1;
+        if (index >= 0) {
+            const deletedItem = this.items?.splice(index, 1);
+        }
+    }
+
+    delete(item: Employee) {
+        this._isLoading.next(true);
+
+        this.subscription$.add(
+            this.service.delete(item)
+                .subscribe(
+                    (n: number) => {
+
+                        this._delete(item);
+
+                        if (this._data) {
+                            this._data.next(this.items); // send a copy of the array
+                        }
+
+                        this._isLoading.next(false);
+                    },
+                    (err: any) => {
+                        console.error(err);
+
+                        this._isLoading.next(false);
+                    }
+                )
+        );
     }
 }

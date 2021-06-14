@@ -11,6 +11,8 @@ namespace EmployeeHR.Interfaces
     {
         Task<Employee> AddAsync(Employee employee);
 
+        Task<int> DeleteAsync(Employee employee);
+
         Task<List<Employee>> GetAsync();
 
         Task<Employee> GetByIdAsync(int id);
