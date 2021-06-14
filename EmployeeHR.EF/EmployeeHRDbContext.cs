@@ -48,6 +48,7 @@ namespace EmployeeHR.EF
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())")
                     .IsConcurrencyToken()
+                    .ValueGeneratedOnAddOrUpdate()
                     ;
             });
         }

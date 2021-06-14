@@ -4,14 +4,16 @@ using EmployeeHR.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EmployeeHR.EF.Migrations
 {
     [DbContext(typeof(EmployeeHRDbContext))]
-    partial class EmployeeHRDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210614173903_RowVersion_Trigger")]
+    partial class RowVersion_Trigger
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
