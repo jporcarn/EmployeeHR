@@ -8,21 +8,22 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{645FA3EF-7303-4B6D-86A5-6537DE82C00C}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeHR.EF", "EmployeeHR.EF\EmployeeHR.EF.csproj", "{3B7421A1-7C61-414D-BD41-38AD9CD17ABC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHR.EF", "EmployeeHR.EF\EmployeeHR.EF.csproj", "{3B7421A1-7C61-414D-BD41-38AD9CD17ABC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeHR.Dal", "EmployeeHR.Dal\EmployeeHR.Dal.csproj", "{18EFFEE0-0F43-4B5B-A976-929F3C6F553A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHR.Dal", "EmployeeHR.Dal\EmployeeHR.Dal.csproj", "{18EFFEE0-0F43-4B5B-A976-929F3C6F553A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeHR.Interfaces", "EmployeeHR.Interfaces\EmployeeHR.Interfaces.csproj", "{7785625A-D03E-4898-AE47-682A1F591168}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHR.Interfaces", "EmployeeHR.Interfaces\EmployeeHR.Interfaces.csproj", "{7785625A-D03E-4898-AE47-682A1F591168}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeHR.Dto", "EmployeeHR.Dto\EmployeeHR.Dto.csproj", "{9C2DB109-BDE1-4957-B3A4-FC472EB8E5C5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHR.Dto", "EmployeeHR.Dto\EmployeeHR.Dto.csproj", "{9C2DB109-BDE1-4957-B3A4-FC472EB8E5C5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeHR.DalTests", "EmployeeHR.DalTests\EmployeeHR.DalTests.csproj", "{8EA7EB6F-6D06-429F-97E6-CC5FD16F873D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHR.DalTests", "EmployeeHR.DalTests\EmployeeHR.DalTests.csproj", "{8EA7EB6F-6D06-429F-97E6-CC5FD16F873D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeHR.Logic", "EmployeeHR.Logic\EmployeeHR.Logic.csproj", "{05E4DD33-89C5-4C01-B2A0-70F750207610}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHR.Logic", "EmployeeHR.Logic\EmployeeHR.Logic.csproj", "{05E4DD33-89C5-4C01-B2A0-70F750207610}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeHR.LogicTests", "EmployeeHR.LogicTests\EmployeeHR.LogicTests.csproj", "{25B7FC97-B447-4AE1-900F-62D81055B6D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHR.LogicTests", "EmployeeHR.LogicTests\EmployeeHR.LogicTests.csproj", "{25B7FC97-B447-4AE1-900F-62D81055B6D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
