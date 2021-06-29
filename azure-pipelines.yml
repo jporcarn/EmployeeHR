@@ -39,8 +39,7 @@ stages:
     steps:
     - task: NodeTool@0
       inputs:
-        versionSpec: '10.x'
-      displayName: 'Install Node.js'
+        versionSpec: '14.x'
 
     - task: Npm@1
       inputs:
