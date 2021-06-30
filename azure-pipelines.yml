@@ -34,6 +34,12 @@ stages:
         inputs:
           platform: '$(buildPlatform)'
           configuration: '$(buildConfiguration)'
+      
+      - task: PublishBuildArtifacts@1
+        inputs:
+          PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+          ArtifactName: 'drop-backend'
+          publishLocation: 'Container'
   
   - job: BuildSPA
     steps:
@@ -70,5 +76,5 @@ stages:
       displayName: 'Publish Artifact'
       inputs:
         targetPath: '$(Build.ArtifactStagingDirectory)'
-        artifactName: 'drop'
+        artifactName: 'drop-frontend'
         publishLocation: 'pipeline'        
