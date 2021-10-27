@@ -61,6 +61,8 @@ namespace EmployeeHR.Api
                     options.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
                 });
 
+            services.AddHealthChecks();
+
             services.AddDbContext<EmployeeHRDbContext>(
                 options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection",
                         x => x.MigrationsAssembly("EmployeeHR.EF")));
@@ -94,6 +96,7 @@ namespace EmployeeHR.Api
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapHealthChecks("/health");
                 endpoints.MapControllers();
             });
         }
