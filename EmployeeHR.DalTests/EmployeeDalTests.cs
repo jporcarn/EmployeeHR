@@ -14,50 +14,31 @@ namespace EmployeeHR.Dal.Tests
     [TestClass()]
     public class EmployeeDalTests
     {
-        [TestMethod()]
-        public async Task GetAsyncTest()
+
+        private static EmployeeHRDbContext dbContext;
+
+        [ClassCleanup] // free resources obtained by all the tests in the test class.
+        public static async Task Cleanup()
         {
-            EmployeeHRDbContext dbContext = CreateDbContext();
-
-            var dal = new EmployeeDal(dbContext);
-
-            var employees = await dal.GetAsync();
-
-            Assert.IsNotNull(employees, "Employees can't be null");
+            Console.WriteLine("ClassCleanup");
+            if (EmployeeDalTests.dbContext != null)
+            {
+                await EmployeeDalTests.dbContext.Database.EnsureDeletedAsync();
+                await EmployeeDalTests.dbContext.DisposeAsync();
+            }
         }
 
-        private static EmployeeHRDbContext CreateDbContext()
+        [ClassInitialize] // before any of the tests in the test class have run
+        public static async Task Initialize(TestContext context)
         {
-            string connectionString = "Integrated Security=SSPI;Persist Security Info=False;User ID='';Initial Catalog=EmmployeeHRDb;Data Source=.\\sqlexpress;";
-            var optionsBuilder = new DbContextOptionsBuilder<EmployeeHRDbContext>();
-            optionsBuilder.UseSqlServer(connectionString);
-            var options = optionsBuilder.Options;
-            var dbContext = new EmployeeHRDbContext(options);
-            return dbContext;
-        }
-
-        [TestMethod()]
-        public async Task GetByIdAsyncTest()
-        {
-            EmployeeHRDbContext dbContext = CreateDbContext();
-
-            var dal = new EmployeeDal(dbContext);
-
-            var employee = await dal.GetByIdAsync(1);
-
-            Assert.IsNotNull(employee);
-            Assert.IsTrue(employee.FirstName == "Palmer");
-            Assert.IsTrue(employee.LastName == "Matthew Hogan");
-
-            Assert.IsTrue(employee.RowVersion.Date != System.DateTime.MinValue, "Row version hasn't been retrieved correctly");
+            Console.WriteLine("ClassInitialize");
+            EmployeeDalTests.dbContext = await CreateDbContextAsync();
         }
 
         [TestMethod()]
         public async Task AddAsyncTest()
         {
-            EmployeeHRDbContext dbContext = CreateDbContext();
-
-            var dal = new EmployeeDal(dbContext);
+            var dal = new EmployeeDal(EmployeeDalTests.dbContext);
 
             var employeeToAdd = new Employee
             {
@@ -79,11 +60,33 @@ namespace EmployeeHR.Dal.Tests
         }
 
         [TestMethod()]
+        public async Task GetAsyncTest()
+        {
+            var dal = new EmployeeDal(EmployeeDalTests.dbContext);
+
+            var employees = await dal.GetAsync();
+
+            Assert.IsNotNull(employees, "Employees can't be null");
+        }
+
+        [TestMethod()]
+        public async Task GetByIdAsyncTest()
+        {
+            var dal = new EmployeeDal(EmployeeDalTests.dbContext);
+
+            var employee = await dal.GetByIdAsync(1);
+
+            Assert.IsNotNull(employee);
+            Assert.IsTrue(employee.FirstName == "Palmer");
+            Assert.IsTrue(employee.LastName == "Matthew Hogan");
+
+            Assert.IsTrue(employee.RowVersion.Date != System.DateTime.MinValue, "Row version hasn't been retrieved correctly");
+        }
+
+        [TestMethod()]
         public async Task UpdateAsyncTest()
         {
-            EmployeeHRDbContext dbContext = CreateDbContext();
-
-            var dal = new EmployeeDal(dbContext);
+            var dal = new EmployeeDal(EmployeeDalTests.dbContext);
 
             var employeeToAdd = new Employee
             {
@@ -107,6 +110,20 @@ namespace EmployeeHR.Dal.Tests
             Assert.IsTrue(employeeUpdated.FirstName == "Test updated");
             Assert.IsTrue(employeeUpdated.LastName == "Case updated");
             Assert.IsTrue(employeeUpdated.RowVersion >= rowVersion);
+        }
+
+        private static async Task<EmployeeHRDbContext> CreateDbContextAsync()
+        {
+            string connectionString = "Server=(localdb)\\mssqllocaldb;Database=EmployeeHRTestDb;Trusted_Connection=True;MultipleActiveResultSets=true";
+            var optionsBuilder = new DbContextOptionsBuilder<EmployeeHRDbContext>();
+            optionsBuilder.UseSqlServer(connectionString);
+
+            var options = optionsBuilder.Options;
+            var dbContext = new EmployeeHRDbContext(options);
+
+            await dbContext.Database.MigrateAsync();
+
+            return dbContext;
         }
     }
 }

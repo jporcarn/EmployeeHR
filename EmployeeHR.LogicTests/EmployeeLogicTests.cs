@@ -28,7 +28,7 @@ namespace EmployeeHR.Logic.Tests
 
         private static EmployeeHRDbContext CreateDbContext()
         {
-            string connectionString = "Integrated Security=SSPI;Persist Security Info=False;User ID='';Initial Catalog=EmmployeeHRDb;Data Source=.\\sqlexpress;";
+            string connectionString = "Server=(localdb)\\mssqllocaldb;Database=EmployeeHRDb;Trusted_Connection=True;MultipleActiveResultSets=true";
             var optionsBuilder = new DbContextOptionsBuilder<EmployeeHRDbContext>();
             optionsBuilder.UseSqlServer(connectionString);
             var options = optionsBuilder.Options;

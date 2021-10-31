@@ -77,10 +77,13 @@ namespace EmployeeHR.Api
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, EmployeeHRDbContext dbContext)
         {
+
             if (env.IsDevelopment())
             {
+                dbContext.Database.Migrate(); // TODO: independent staging step in your CD pipeline which runs before application deployment
+
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "EmployeeHR.Api v1"));

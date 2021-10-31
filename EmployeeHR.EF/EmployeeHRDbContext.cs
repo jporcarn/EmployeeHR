@@ -20,7 +20,6 @@ namespace EmployeeHR.EF
         {
             base.OnConfiguring(optionsBuilder);
 
-            // optionsBuilder.UseSqlServer("Integrated Security=SSPI;Persist Security Info=False;User ID='';Initial Catalog=EmmployeeHRDb;Data Source=.\\sqlexpress;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
