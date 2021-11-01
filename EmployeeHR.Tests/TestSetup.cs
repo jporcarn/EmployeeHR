@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EmployeeHR.Dal.Tests
+namespace EmployeeHR.Tests
 {
     [TestClass()]
     public static class TestSetup
