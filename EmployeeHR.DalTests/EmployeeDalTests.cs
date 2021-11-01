@@ -22,7 +22,7 @@ namespace EmployeeHR.Dal.Tests
         [ClassCleanup] // free resources obtained by all the tests in the test class.
         public static async Task Cleanup()
         {
-            Console.WriteLine("ClassCleanup");
+            System.Diagnostics.Debug.WriteLine("ClassCleanup");
             if (EmployeeDalTests.DbContext != null)
             {
                 await EmployeeDalTests.DbContext.Database.EnsureDeletedAsync();
@@ -33,7 +33,7 @@ namespace EmployeeHR.Dal.Tests
         [ClassInitialize] // before any of the tests in the test class have run
         public static async Task Initialize(TestContext context)
         {
-            Console.WriteLine("ClassInitialize");
+            System.Diagnostics.Debug.WriteLine("ClassInitialize");
 
             EmployeeDalTests.Configuration = context.Properties["configuration"] as IConfiguration;
             EmployeeDalTests.DbContext = await CreateDbContextAsync(EmployeeDalTests.Configuration);

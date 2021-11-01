@@ -15,7 +15,8 @@ namespace EmployeeHR.Tests
         [AssemblyInitialize()]
         public static void AssemblyInit(TestContext context)
         {
-            Console.WriteLine("AssemblyInit " + context.TestName);
+
+            System.Diagnostics.Debug.WriteLine("AssemblyInit " + context.TestName);
             string outputPath = context.TestDeploymentDir;
 
 
@@ -35,7 +36,7 @@ namespace EmployeeHR.Tests
         [AssemblyCleanup()]
         public static void AssemblyCleanup()
         {
-            Console.WriteLine("AssemblyCleanup");
+            System.Diagnostics.Debug.WriteLine("AssemblyCleanup");
         }
     }
 }
