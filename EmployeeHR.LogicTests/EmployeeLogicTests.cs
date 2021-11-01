@@ -9,38 +9,52 @@ using EmployeeHR.Dal;
 using EmployeeHR.EF;
 using Microsoft.EntityFrameworkCore;
 using EmployeeHR.Dto;
+using Microsoft.Extensions.Configuration;
 
 namespace EmployeeHR.Logic.Tests
 {
+
     [TestClass()]
     public class EmployeeLogicTests
     {
+        public static IConfiguration Configuration { get; private set; }
+        public static EmployeeHRDbContext DbContext { get; private set; }
+
+
+        [ClassCleanup] // free resources obtained by all the tests in the test class.
+        public static async Task Cleanup()
+        {
+            Console.WriteLine("ClassCleanup");
+            if (EmployeeLogicTests.DbContext != null)
+            {
+                await EmployeeLogicTests.DbContext.Database.EnsureDeletedAsync();
+                await EmployeeLogicTests.DbContext.DisposeAsync();
+            }
+        }
+
+        [ClassInitialize] // before any of the tests in the test class have run
+        public static async Task Initialize(TestContext context)
+        {
+            Console.WriteLine("ClassInitialize");
+
+            EmployeeLogicTests.Configuration = context.Properties["configuration"] as IConfiguration;
+            EmployeeLogicTests.DbContext = await CreateDbContextAsync(EmployeeLogicTests.Configuration);
+        }
+
         [TestMethod()]
         public async Task GetAsyncTest()
         {
-            var dbContext = CreateDbContext();
-            var employeeDal = new EmployeeDal(dbContext);
+            var employeeDal = new EmployeeDal(EmployeeLogicTests.DbContext);
             var logic = new EmployeeLogic(employeeDal);
 
             var employees = await logic.GetAsync();
             Assert.IsNotNull(employees, "Employees can't be null");
         }
 
-        private static EmployeeHRDbContext CreateDbContext()
-        {
-            string connectionString = "Server=(localdb)\\mssqllocaldb;Database=EmployeeHRDb;Trusted_Connection=True;MultipleActiveResultSets=true";
-            var optionsBuilder = new DbContextOptionsBuilder<EmployeeHRDbContext>();
-            optionsBuilder.UseSqlServer(connectionString);
-            var options = optionsBuilder.Options;
-            var dbContext = new EmployeeHRDbContext(options);
-            return dbContext;
-        }
-
         [TestMethod()]
         public async Task GetByIdAsyncTest()
         {
-            var dbContext = CreateDbContext();
-            var employeeDal = new EmployeeDal(dbContext);
+            var employeeDal = new EmployeeDal(EmployeeLogicTests.DbContext);
             var logic = new EmployeeLogic(employeeDal);
 
             var employee = await logic.GetByIdAsync(1);
@@ -53,8 +67,7 @@ namespace EmployeeHR.Logic.Tests
         [TestMethod()]
         public async Task AddAsyncTest()
         {
-            var dbContext = CreateDbContext();
-            var employeeDal = new EmployeeDal(dbContext);
+            var employeeDal = new EmployeeDal(EmployeeLogicTests.DbContext);
             var logic = new EmployeeLogic(employeeDal);
 
             var employeeToAdd = new Employee
@@ -77,8 +90,7 @@ namespace EmployeeHR.Logic.Tests
         [TestMethod()]
         public async Task UpdateAsyncTest()
         {
-            var dbContext = CreateDbContext();
-            var employeeDal = new EmployeeDal(dbContext);
+            var employeeDal = new EmployeeDal(EmployeeLogicTests.DbContext);
             var logic = new EmployeeLogic(employeeDal);
 
             var employeeToAdd = new Employee
@@ -109,8 +121,7 @@ namespace EmployeeHR.Logic.Tests
         [TestMethod()]
         public async Task UpdateAsyncNegativeTest1()
         {
-            var dbContext = CreateDbContext();
-            var employeeDal = new EmployeeDal(dbContext);
+            var employeeDal = new EmployeeDal(EmployeeLogicTests.DbContext);
             var logic = new EmployeeLogic(employeeDal);
 
             var employeeToUpdate = await logic.GetByIdAsync(1);
@@ -133,8 +144,7 @@ namespace EmployeeHR.Logic.Tests
         [TestMethod()]
         public async Task UpdateAsyncNegativeTest2()
         {
-            var dbContext = CreateDbContext();
-            var employeeDal = new EmployeeDal(dbContext);
+            var employeeDal = new EmployeeDal(EmployeeLogicTests.DbContext);
             var logic = new EmployeeLogic(employeeDal);
 
             var employeeToUpdate = await logic.GetByIdAsync(1);
@@ -157,8 +167,7 @@ namespace EmployeeHR.Logic.Tests
         [TestMethod()]
         public async Task UpdateAsyncNegativeTest3()
         {
-            var dbContext = CreateDbContext();
-            var employeeDal = new EmployeeDal(dbContext);
+            var employeeDal = new EmployeeDal(EmployeeLogicTests.DbContext);
             var logic = new EmployeeLogic(employeeDal);
 
             var employeeToUpdate = await logic.GetByIdAsync(1);
@@ -184,8 +193,7 @@ namespace EmployeeHR.Logic.Tests
         [TestMethod()]
         public async Task DeleteAsyncTest()
         {
-            var dbContext = CreateDbContext();
-            var employeeDal = new EmployeeDal(dbContext);
+            var employeeDal = new EmployeeDal(EmployeeLogicTests.DbContext);
             var logic = new EmployeeLogic(employeeDal);
 
             var employeeToAdd = new Employee
@@ -219,8 +227,7 @@ namespace EmployeeHR.Logic.Tests
         [TestMethod()]
         public async Task DeleteAsyncNegativeTest1()
         {
-            var dbContext = CreateDbContext();
-            var employeeDal = new EmployeeDal(dbContext);
+            var employeeDal = new EmployeeDal(EmployeeLogicTests.DbContext);
             var logic = new EmployeeLogic(employeeDal);
 
             var employeeToAdd = new Employee
@@ -261,6 +268,20 @@ namespace EmployeeHR.Logic.Tests
             {
                 Assert.Fail(ex.Message);
             }
+        }
+
+        public static async Task<EmployeeHRDbContext> CreateDbContextAsync(IConfiguration configuration)
+        {
+            string connectionString = configuration.GetConnectionString("DefaultConnection");
+            var optionsBuilder = new DbContextOptionsBuilder<EmployeeHRDbContext>();
+            optionsBuilder.UseSqlServer(connectionString);
+
+            var options = optionsBuilder.Options;
+            var dbContext = new EmployeeHRDbContext(options);
+
+            await dbContext.Database.MigrateAsync();
+
+            return dbContext;
         }
     }
 }

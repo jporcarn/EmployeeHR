@@ -8,23 +8,25 @@ using System.Threading.Tasks;
 using EmployeeHR.EF;
 using Microsoft.EntityFrameworkCore;
 using EmployeeHR.Dto;
+using Microsoft.Extensions.Configuration;
 
 namespace EmployeeHR.Dal.Tests
 {
     [TestClass()]
     public class EmployeeDalTests
     {
+        public static IConfiguration Configuration { get; private set; }
+        public static EmployeeHRDbContext DbContext { get; private set; }
 
-        private static EmployeeHRDbContext dbContext;
 
         [ClassCleanup] // free resources obtained by all the tests in the test class.
         public static async Task Cleanup()
         {
             Console.WriteLine("ClassCleanup");
-            if (EmployeeDalTests.dbContext != null)
+            if (EmployeeDalTests.DbContext != null)
             {
-                await EmployeeDalTests.dbContext.Database.EnsureDeletedAsync();
-                await EmployeeDalTests.dbContext.DisposeAsync();
+                await EmployeeDalTests.DbContext.Database.EnsureDeletedAsync();
+                await EmployeeDalTests.DbContext.DisposeAsync();
             }
         }
 
@@ -32,13 +34,15 @@ namespace EmployeeHR.Dal.Tests
         public static async Task Initialize(TestContext context)
         {
             Console.WriteLine("ClassInitialize");
-            EmployeeDalTests.dbContext = await CreateDbContextAsync();
+
+            EmployeeDalTests.Configuration = context.Properties["configuration"] as IConfiguration;
+            EmployeeDalTests.DbContext = await CreateDbContextAsync(EmployeeDalTests.Configuration);
         }
 
         [TestMethod()]
         public async Task AddAsyncTest()
         {
-            var dal = new EmployeeDal(EmployeeDalTests.dbContext);
+            var dal = new EmployeeDal(EmployeeDalTests.DbContext);
 
             var employeeToAdd = new Employee
             {
@@ -62,7 +66,7 @@ namespace EmployeeHR.Dal.Tests
         [TestMethod()]
         public async Task GetAsyncTest()
         {
-            var dal = new EmployeeDal(EmployeeDalTests.dbContext);
+            var dal = new EmployeeDal(EmployeeDalTests.DbContext);
 
             var employees = await dal.GetAsync();
 
@@ -72,7 +76,7 @@ namespace EmployeeHR.Dal.Tests
         [TestMethod()]
         public async Task GetByIdAsyncTest()
         {
-            var dal = new EmployeeDal(EmployeeDalTests.dbContext);
+            var dal = new EmployeeDal(EmployeeDalTests.DbContext);
 
             var employee = await dal.GetByIdAsync(1);
 
@@ -86,7 +90,7 @@ namespace EmployeeHR.Dal.Tests
         [TestMethod()]
         public async Task UpdateAsyncTest()
         {
-            var dal = new EmployeeDal(EmployeeDalTests.dbContext);
+            var dal = new EmployeeDal(EmployeeDalTests.DbContext);
 
             var employeeToAdd = new Employee
             {
@@ -112,9 +116,9 @@ namespace EmployeeHR.Dal.Tests
             Assert.IsTrue(employeeUpdated.RowVersion >= rowVersion);
         }
 
-        private static async Task<EmployeeHRDbContext> CreateDbContextAsync()
+        public static async Task<EmployeeHRDbContext> CreateDbContextAsync(IConfiguration configuration)
         {
-            string connectionString = "Server=(localdb)\\mssqllocaldb;Database=EmployeeHRTestDb;Trusted_Connection=True;MultipleActiveResultSets=true";
+            string connectionString = configuration.GetConnectionString("DefaultConnection");
             var optionsBuilder = new DbContextOptionsBuilder<EmployeeHRDbContext>();
             optionsBuilder.UseSqlServer(connectionString);
 
