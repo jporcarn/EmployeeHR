@@ -11,7 +11,7 @@ namespace EmployeeHR.Interfaces
     {
         Task<Employee> AddAsync(Employee employee);
 
-        Task<List<Employee>> GetAsync();
+        Task<IEnumerable<Employee>> GetAsync();
 
         Task<Employee> GetByIdAsync(int id);
 

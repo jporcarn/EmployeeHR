@@ -40,12 +40,13 @@ namespace EmployeeHR.Dal
             return affectedRecords;
         }
 
-        public async Task<List<Employee>> GetAsync()
+        public async Task<IEnumerable<Employee>> GetAsync()
         {
             var employees = await this._dbContext
                 .Employee
                 .AsNoTracking()
                 .ToListAsync();
+
             return employees;
         }
 

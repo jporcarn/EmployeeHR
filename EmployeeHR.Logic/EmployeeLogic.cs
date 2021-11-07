@@ -52,7 +52,7 @@ namespace EmployeeHR.Logic
             return affectedRecords;
         }
 
-        public async Task<List<Employee>> GetAsync()
+        public async Task<IEnumerable<Employee>> GetAsync()
         {
             var employees = await this._employeeDal.GetAsync();
 

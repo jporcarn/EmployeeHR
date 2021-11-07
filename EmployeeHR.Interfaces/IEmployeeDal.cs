@@ -13,7 +13,7 @@ namespace EmployeeHR.Interfaces
 
         Task<int> DeleteAsync(Employee employee);
 
-        Task<List<Employee>> GetAsync();
+        Task<IEnumerable<Employee>> GetAsync();
 
         Task<Employee> GetByIdAsync(int id);
 

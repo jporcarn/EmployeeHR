@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace EmployeeHR.Dto
 {
-    public class Employee
+    public class Employee : ICloneable
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
@@ -15,5 +15,11 @@ namespace EmployeeHR.Dto
         public string SocialSecurityNumber { get; set; }
         public string PhoneNumber { get; set; }
         public DateTime RowVersion { get; set; }
+
+        public object Clone()
+        {
+            Employee other = (Employee)this.MemberwiseClone();
+            return other;
+        }
     }
 }

@@ -25,7 +25,7 @@ namespace EmployeeHR.Api.Controllers
         {
             var employees = await this._employeeLogic.GetAsync();
 
-            if (employees?.Count == 0)
+            if (employees?.Count() == 0)
             {
                 return NotFound();
             }
