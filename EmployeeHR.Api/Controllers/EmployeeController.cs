@@ -1,8 +1,8 @@
 ﻿using EmployeeHR.Dto;
 using EmployeeHR.Interfaces;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,8 +19,8 @@ namespace EmployeeHR.Api.Controllers
             this._employeeLogic = employeeLogic;
         }
 
-        // GET: api/<EmployeeController>
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAsync()
         {
             var employees = await this._employeeLogic.GetAsync();
@@ -35,6 +35,8 @@ namespace EmployeeHR.Api.Controllers
 
         // GET api/<EmployeeController>/5
         [HttpGet("{id:int}", Name = nameof(GetByIdAsync))]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetByIdAsync([FromRoute] int id)
         {
             var employee = await this._employeeLogic.GetByIdAsync(id);

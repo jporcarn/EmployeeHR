@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace EmployeeHR.Dto
 {
-    public class Employee : ICloneable
+    public class Employee : ICloneable, IEquatable<Employee>
     {
         public int Id { get; set; }
         public string FirstName { get; set; }
@@ -20,6 +15,13 @@ namespace EmployeeHR.Dto
         {
             Employee other = (Employee)this.MemberwiseClone();
             return other;
+        }
+
+        public bool Equals(Employee other)
+        {
+            return this.Id.Equals(other.Id) &&
+                this.FirstName.Equals(other.FirstName) &&
+                this.LastName.Equals(other.LastName);
         }
     }
 }
