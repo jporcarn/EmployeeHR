@@ -5,17 +5,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
-using System.Net.Mime;
-using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace EmployeeHR.Api.Controllers.IntegrationTests
 {
-    public class EmployeeControllerTests : IClassFixture<TestWebApplicationFactory<Startup>>
+    public class EmployeeControllerAllInOneTests : IClassFixture<TestWebApplicationFactory<Startup>>
     {
-        const string skipReason = "Already covered by EmployeeControllerAllInOneTests";
-
         private readonly IEnumerable<Employee> _expectedEmployees = new List<Employee>
             {
                 new Employee
@@ -84,56 +80,14 @@ namespace EmployeeHR.Api.Controllers.IntegrationTests
 
         private readonly HttpClient _httpClient;
 
-        public EmployeeControllerTests(TestWebApplicationFactory<Startup> factory)
+        public EmployeeControllerAllInOneTests(TestWebApplicationFactory<Startup> factory)
         {
             this._factory = factory;
             this._httpClient = this._factory.CreateDefaultClient();
 
         }
 
-        [Fact(Skip = skipReason)]
-        public async Task GetAsyncReturnsContentTest()
-        {
-            var response = await this._httpClient.GetAsync("/api/employee");
-
-            Assert.NotNull(response.Content);
-            Assert.True(response.Content.Headers.ContentLength > 0);
-
-        }
-
-        [Fact(Skip = skipReason)]
-        public async Task GetAsyncReturnsExpectedContentTest()
-        {
-
-            var responseStream = await this._httpClient.GetStreamAsync("/api/employee");
-
-            var model = await JsonSerializer.DeserializeAsync<IEnumerable<Employee>>(responseStream, new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
-
-            Assert.NotNull(model);
-
-            var orderedExpectedEmployees = this._expectedEmployees.OrderBy(e => e.Id);
-            var orderedEmployees = model?.OrderBy(ae => ae.Id).Take(10).OrderBy(ae => ae.Id);
-            Assert.True(orderedExpectedEmployees.SequenceEqual(orderedEmployees));
-        }
-
-        [Fact(Skip = skipReason)]
-        public async Task GetAsyncReturnsExpectedMediaTypeTest()
-        {
-            var response = await this._httpClient.GetAsync("/api/employee");
-
-            Assert.Equal(MediaTypeNames.Application.Json, response.Content.Headers.ContentType.MediaType);
-
-        }
-
-        [Fact(Skip = skipReason)]
-        public async Task GetAsyncReturnsStatus200OKTest()
-        {
-            var response = await this._httpClient.GetAsync("/api/employee");
-            response.EnsureSuccessStatusCode();
-        }
-
-
-        [Fact(Skip = skipReason)]
+        [Fact()]
         public async Task GetAsyncReturnsExpectedResponseTest()
         {
 
