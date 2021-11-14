@@ -1,4 +1,6 @@
-﻿using EmployeeHR.Dto;
+﻿using AutoMapper;
+using EmployeeHR.Api.Models;
+using EmployeeHR.Dto;
 using EmployeeHR.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -13,10 +15,12 @@ namespace EmployeeHR.Api.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeLogic _employeeLogic;
+        private readonly IMapper _mapper;
 
-        public EmployeeController(IEmployeeLogic employeeLogic)
+        public EmployeeController(IEmployeeLogic employeeLogic, IMapper mapper)
         {
             this._employeeLogic = employeeLogic;
+            this._mapper = mapper;
         }
 
         [HttpGet]
@@ -50,12 +54,15 @@ namespace EmployeeHR.Api.Controllers
 
         // POST api/<EmployeeController>
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] Employee employeeToAdd)
+        public async Task<IActionResult> PostAsync([FromBody] CreateEmployeeRequest createEmployeeRequest)
         {
             if (!this.ModelState.IsValid)
             {
                 return BadRequest();
             }
+
+
+            var employeeToAdd = this._mapper.Map<Employee>(createEmployeeRequest);
 
             var employeeAdded = await this._employeeLogic.AddAsync(employeeToAdd);
 
