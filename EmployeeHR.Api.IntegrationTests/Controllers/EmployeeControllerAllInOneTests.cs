@@ -1,4 +1,6 @@
-﻿using EmployeeHR.Api.IntegrationTests;
+﻿using AutoFixture.Xunit2;
+using EmployeeHR.Api.IntegrationTests;
+using EmployeeHR.Api.Models;
 using EmployeeHR.Dto;
 using System;
 using System.Collections.Generic;
@@ -98,6 +100,44 @@ namespace EmployeeHR.Api.Controllers.IntegrationTests
             var orderedExpectedEmployees = this._expectedEmployees.OrderBy(e => e.Id);
             var orderedEmployees = model?.OrderBy(ae => ae.Id).Take(10).OrderBy(ae => ae.Id);
             Assert.True(orderedExpectedEmployees.SequenceEqual(orderedEmployees));
+        }
+
+
+        [Theory(), AutoData]
+        public async Task PostAsyncWithValidInputModelsReutrnsStatus201CreatedTest(CreateEmployeeRequest createEmployeeRequest)
+        {
+
+            var response = await this._httpClient.PostAsJsonAsync("/api/employee", createEmployeeRequest, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            Assert.Equal(System.Net.HttpStatusCode.Created, response.StatusCode);
+            Assert.NotNull(response.Headers.Location);
+
+
+            var body = await response.Content.ReadAsStringAsync();
+            Assert.True(!String.IsNullOrWhiteSpace(body));
+
+            var employee = System.Text.Json.JsonSerializer.Deserialize<Employee>(body, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            Assert.NotNull(employee);
+
+
+            Assert.Equal($"http://localhost/api/employee/{employee.Id}", response.Headers.Location.ToString().ToLower());
+
+        }
+
+
+        [Theory(), AutoData]
+        public async Task PostAsyncWithValidInputModelsAfterPostingItCanBeRetrievedTest(CreateEmployeeRequest createEmployeeRequest)
+        {
+
+            var response = await this._httpClient.PostAsJsonAsync("/api/employee", createEmployeeRequest, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            response.EnsureSuccessStatusCode();
+
+
+            var getResponse = await this._httpClient.GetAsync(response.Headers.Location.ToString().ToLower());
+
+            getResponse.EnsureSuccessStatusCode();
+
         }
     }
 }
