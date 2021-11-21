@@ -1,17 +1,12 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using EmployeeHR.Dal;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using EmployeeHR.Dto;
 using EmployeeHR.EF;
-using Microsoft.EntityFrameworkCore;
-using EmployeeHR.Dto;
 using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace EmployeeHR.Dal.Tests
 {
+
     [TestClass()]
     public class EmployeeDalTests
     {
@@ -23,10 +18,10 @@ namespace EmployeeHR.Dal.Tests
         public static async Task Cleanup()
         {
             System.Diagnostics.Debug.WriteLine("ClassCleanup");
-            if (EmployeeDalTests.DbContext != null)
+            if (DbContext != null)
             {
-                await EmployeeDalTests.DbContext.Database.EnsureDeletedAsync();
-                await EmployeeDalTests.DbContext.DisposeAsync();
+                await DbContext.Database.EnsureDeletedAsync();
+                await DbContext.DisposeAsync();
             }
         }
 
@@ -35,14 +30,14 @@ namespace EmployeeHR.Dal.Tests
         {
             System.Diagnostics.Debug.WriteLine("ClassInitialize");
 
-            EmployeeDalTests.Configuration = context.Properties["configuration"] as IConfiguration;
-            EmployeeDalTests.DbContext = await CreateDbContextAsync(EmployeeDalTests.Configuration);
+            Configuration = context.Properties["configuration"] as IConfiguration;
+            DbContext = await Helper.CreateDbContextAsync(EmployeeDalTests.Configuration);
         }
 
         [TestMethod()]
         public async Task AddAsyncTest()
         {
-            var dal = new EmployeeDal(EmployeeDalTests.DbContext);
+            var dal = new EmployeeDal(DbContext);
 
             var employeeToAdd = new Employee
             {
@@ -53,7 +48,9 @@ namespace EmployeeHR.Dal.Tests
                 PhoneNumber = "000000000"
             };
 
-            var employeeAdded = await dal.AddAsync(employeeToAdd);
+            var employeeAddedId = await dal.AddAsync(employeeToAdd);
+
+            var employeeAdded = await dal.GetByIdAsync(employeeAddedId);
 
             Assert.IsNotNull(employeeAdded);
             Assert.IsTrue(employeeAdded.Id > 0);
@@ -66,7 +63,7 @@ namespace EmployeeHR.Dal.Tests
         [TestMethod()]
         public async Task GetAsyncTest()
         {
-            var dal = new EmployeeDal(EmployeeDalTests.DbContext);
+            var dal = new EmployeeDal(DbContext);
 
             var employees = await dal.GetAsync();
 
@@ -76,7 +73,7 @@ namespace EmployeeHR.Dal.Tests
         [TestMethod()]
         public async Task GetByIdAsyncTest()
         {
-            var dal = new EmployeeDal(EmployeeDalTests.DbContext);
+            var dal = new EmployeeDal(DbContext);
 
             var employee = await dal.GetByIdAsync(1);
 
@@ -90,7 +87,7 @@ namespace EmployeeHR.Dal.Tests
         [TestMethod()]
         public async Task UpdateAsyncTest()
         {
-            var dal = new EmployeeDal(EmployeeDalTests.DbContext);
+            var dal = new EmployeeDal(DbContext);
 
             var employeeToAdd = new Employee
             {
@@ -101,14 +98,20 @@ namespace EmployeeHR.Dal.Tests
                 PhoneNumber = "000000000"
             };
 
-            var employeeToUpdate = await dal.AddAsync(employeeToAdd);
+            var employeeToUpdateId = await dal.AddAsync(employeeToAdd);
+
+            var employeeToUpdate = await dal.GetByIdAsync(employeeToUpdateId);
+
             var rowVersion = employeeToUpdate.RowVersion;
 
             System.Threading.Thread.Sleep(1000); // wait for 1 second before attempting to update the record just created
             employeeToUpdate.FirstName = "Test updated";
             employeeToUpdate.LastName = "Case updated";
 
-            var employeeUpdated = await dal.UpdateAsync(employeeToUpdate);
+            var n = await dal.UpdateAsync(employeeToUpdate);
+            Assert.AreEqual(1, n);
+
+            var employeeUpdated = await dal.GetByIdAsync(employeeToUpdate.Id);
 
             Assert.IsTrue(employeeUpdated.Id == employeeToUpdate.Id);
             Assert.IsTrue(employeeUpdated.FirstName == "Test updated");
@@ -116,18 +119,6 @@ namespace EmployeeHR.Dal.Tests
             Assert.IsTrue(employeeUpdated.RowVersion >= rowVersion);
         }
 
-        public static async Task<EmployeeHRDbContext> CreateDbContextAsync(IConfiguration configuration)
-        {
-            string connectionString = configuration.GetConnectionString("DefaultConnection");
-            var optionsBuilder = new DbContextOptionsBuilder<EmployeeHRDbContext>();
-            optionsBuilder.UseSqlServer(connectionString);
 
-            var options = optionsBuilder.Options;
-            var dbContext = new EmployeeHRDbContext(options);
-
-            await dbContext.Database.MigrateAsync();
-
-            return dbContext;
-        }
     }
 }

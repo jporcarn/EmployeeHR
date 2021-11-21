@@ -1,20 +1,17 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using EmployeeHR.Logic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using EmployeeHR.Dto;
-using Microsoft.Extensions.Configuration;
-using Moq;
+﻿using EmployeeHR.Dto;
 using EmployeeHR.Interfaces;
+using EmployeeHR.Tests;
+using Microsoft.Extensions.Configuration;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace EmployeeHR.Logic.Tests
 {
 
     [TestClass()]
-    public class EmployeeLogicTests
+    public class DomainTest
     {
         public static IConfiguration Configuration { get; private set; }
 
@@ -31,28 +28,130 @@ namespace EmployeeHR.Logic.Tests
         {
             System.Diagnostics.Debug.WriteLine("ClassInitialize");
 
-            EmployeeLogicTests.Configuration = context.Properties["configuration"] as IConfiguration;
+            Configuration = context.Properties["configuration"] as IConfiguration;
+        }
+    }
+
+    [TestClass()]
+    public class EmployeeLogicTests : DomainTest
+    {
+
+        [TestMethod()]
+        public async Task AddAsyncTest()
+        {
+            // Mock
+            Employee employeeToAdd = FizzWare.NBuilder.Builder<Employee>.CreateNew().Build();
+
+            IEmployeeUnitOfwork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+                 .WithGetAll()
+                 .WithAdd(employeeToAdd)
+                 .WithGetById(employeeToAdd.Id + 1)
+                 .AsObject();
+
+            // Test
+            var logic = new EmployeeLogic(employeeUnitOfwork);
+
+            var employeeAdded = await logic.AddAsync(employeeToAdd);
+
+            Assert.IsNotNull(employeeAdded);
+            Assert.IsTrue(employeeAdded.Id > 0);
+            Assert.IsTrue(employeeAdded.FirstName == employeeToAdd.FirstName);
+            Assert.IsTrue(employeeAdded.LastName == employeeToAdd.LastName);
+
+        }
+
+        [TestMethod()]
+        [DataRow(1)]
+        public async Task DeleteAsyncNegativeTest1(int employeeId)
+        {
+            // Mock
+            Employee employeeToDeleteMock = FizzWare.NBuilder.Builder<Employee>.CreateNew().Build();
+            employeeToDeleteMock.Id = employeeId;
+
+            IEmployeeUnitOfwork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+                 .WithGetAll()
+                 .WithGetById(employeeId)
+                 .WithDelete(employeeToDeleteMock)
+                 .AsObject();
+
+            var employeeToDelete = (await employeeUnitOfwork.GetAsync()).FirstOrDefault(e => e.Id == employeeId);
+            Assert.IsTrue(employeeToDelete != null, "Mock data has not been set up correctly");
+
+            // simulate some other user updates same employee before me
+            var employeeInOtherThreadUpdated = employeeToDelete.Clone() as Employee;
+            Assert.IsNotNull(employeeInOtherThreadUpdated, "Employee updated in other thread shoudn't be null");
+            employeeInOtherThreadUpdated.RowVersion = employeeInOtherThreadUpdated.RowVersion.AddMilliseconds(300);
+
+
+            employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+                .WithGetAll()
+                .WithGetById(employeeId, employeeInOtherThreadUpdated)
+                .WithDelete(employeeToDelete)
+                .AsObject();
+
+            // Test
+            var logic = new EmployeeLogic(employeeUnitOfwork);
+
+            try
+            {
+                int affectedRecords = await logic.DeleteAsync(employeeId, employeeToDelete);
+
+                Assert.Fail("Employee shoudn't have been updated");
+            }
+            catch (CustomException ex)
+            {
+                Assert.IsTrue(ex.StatusCode == System.Net.HttpStatusCode.Conflict);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
+        }
+
+        [TestMethod()]
+        [DataRow(1)]
+        public async Task DeleteAsyncTest(int employeeId)
+        {
+            // Mock
+
+            Employee employeeToDeleteMock = FizzWare.NBuilder.Builder<Employee>.CreateNew().Build();
+            employeeToDeleteMock.Id = employeeId;
+
+            IEmployeeUnitOfwork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+                 .WithGetAll()
+                 .WithGetById(employeeId)
+                 .WithDelete(employeeToDeleteMock)
+                 .AsObject();
+
+            // Test
+            var logic = new EmployeeLogic(employeeUnitOfwork);
+
+            try
+            {
+                int affectedRecords = await logic.DeleteAsync(employeeId, employeeToDeleteMock);
+
+                Assert.IsTrue(affectedRecords > 0, "Affected records shoud be higher than 0");
+            }
+            catch (CustomException ex)
+            {
+                Assert.IsTrue(ex.StatusCode == System.Net.HttpStatusCode.Conflict);
+            }
+            catch (Exception ex)
+            {
+                Assert.Fail(ex.Message);
+            }
         }
 
         [TestMethod()]
         public async Task GetAsyncTest()
         {
-            // Mock IEmployeeDal
-            Mock<IEmployeeDal> mock = new Mock<IEmployeeDal>();
-
-            var employeesMoke = FizzWare.NBuilder.Builder<Employee>
-                .CreateListOfSize(100)
-                .Build()
-                .AsEnumerable();
-
-            mock
-                .Setup(m => m.GetAsync())
-                .Returns(Task.FromResult(employeesMoke));
-
-            IEmployeeDal employeeDal = mock.Object;
+            // Mock
+            IEmployeeUnitOfwork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+                .WithGetAll()
+                .AsObject();
 
             // Test
-            var logic = new EmployeeLogic(employeeDal);
+            var logic = new EmployeeLogic(employeeUnitOfwork);
 
             var employees = await logic.GetAsync();
             Assert.IsNotNull(employees, "Employees can't be null");
@@ -62,149 +161,45 @@ namespace EmployeeHR.Logic.Tests
         [DataRow(1)]
         public async Task GetByIdAsyncTest(int employeeId)
         {
-            // Mock IEmployeeDal
-            Mock<IEmployeeDal> mock = new Mock<IEmployeeDal>();
-
-            var employeesMoke = FizzWare.NBuilder.Builder<Employee>
-                .CreateListOfSize(100)
-                .Build()
-                .AsEnumerable();
-
-            mock
-                .Setup(m => m.GetAsync())
-                .Returns(Task.FromResult(employeesMoke));
-
-            mock
-                .Setup(m => m.GetByIdAsync(employeeId))
-                .Returns(Task.FromResult(employeesMoke.FirstOrDefault(e => e.Id == 1)));
-
-            IEmployeeDal employeeDal = mock.Object;
+            // Mock
+            IEmployeeUnitOfwork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+                 .WithGetAll()
+                 .WithGetById(employeeId)
+                 .AsObject();
 
             // Test
-            var logic = new EmployeeLogic(employeeDal);
+            var logic = new EmployeeLogic(employeeUnitOfwork);
 
             var employee = await logic.GetByIdAsync(employeeId);
 
+            var employees = await logic.GetAsync();
+
             Assert.IsNotNull(employee);
-            Assert.IsTrue(employee.FirstName == employeesMoke.FirstOrDefault(e => e.Id == 1).FirstName);
-            Assert.IsTrue(employee.LastName == employeesMoke.FirstOrDefault(e => e.Id == 1).LastName);
+            Assert.IsTrue(employee.FirstName == employees.FirstOrDefault(e => e.Id == employeeId).FirstName);
+            Assert.IsTrue(employee.LastName == employees.FirstOrDefault(e => e.Id == employeeId).LastName);
         }
-
-        [TestMethod()]
-        public async Task AddAsyncTest()
-        {
-            // Mock IEmployeeDal
-            Mock<IEmployeeDal> mockEmployeeDal = new Mock<IEmployeeDal>();
-
-            var employeesMoke = FizzWare.NBuilder.Builder<Employee>
-                .CreateListOfSize(100)
-                .Build()
-                .AsEnumerable();
-
-            Employee employeeMock = FizzWare.NBuilder.Builder<Employee>.CreateNew().Build();
-
-            var expected = employeeMock.Clone() as Employee;
-            expected.Id = employeesMoke.Count() + 1;
-
-            mockEmployeeDal
-                .Setup(m => m.GetAsync())
-                .Returns(Task.FromResult(employeesMoke));
-
-            mockEmployeeDal
-                .Setup(m => m.GetByIdAsync(expected.Id))
-                .Returns(Task.FromResult(expected));
-
-            mockEmployeeDal
-                .Setup(m => m.AddAsync(employeeMock))
-                .Returns(Task.FromResult(expected));
-
-            IEmployeeDal employeeDal = mockEmployeeDal.Object;
-
-            // Test
-            var logic = new EmployeeLogic(employeeDal);
-
-            var employeeAdded = await logic.AddAsync(employeeMock);
-
-            Assert.IsNotNull(employeeAdded);
-            Assert.IsTrue(employeeAdded.Id > 0);
-            Assert.IsTrue(employeeAdded.FirstName == employeeMock.FirstName);
-            Assert.IsTrue(employeeAdded.LastName == employeeMock.LastName);
-
-        }
-
-        [TestMethod()]
-        [DataRow(1)]
-        public async Task UpdateAsyncTest(int employeeId)
-        {
-            // Mock IEmployeeDal
-            Mock<IEmployeeDal> mockEmployeeDal = new Mock<IEmployeeDal>();
-
-            Employee employeeMock = FizzWare.NBuilder.Builder<Employee>.CreateNew().Build();
-            employeeMock.Id = employeeId;
-
-            mockEmployeeDal
-               .Setup(m => m.GetByIdAsync(employeeId))
-               .Returns(Task.FromResult(employeeMock));
-
-            var employeeUpdatedMock = employeeMock.Clone() as Employee;
-            employeeUpdatedMock.FirstName = "Test updated";
-            employeeUpdatedMock.LastName = "Case updated";
-            employeeUpdatedMock.RowVersion = employeeUpdatedMock.RowVersion.AddMilliseconds(300);
-
-            mockEmployeeDal
-                .Setup(m => m.UpdateAsync(employeeMock))
-                .Returns(Task.FromResult(employeeUpdatedMock));
-
-            IEmployeeDal employeeDal = mockEmployeeDal.Object;
-
-            // Test
-            var logic = new EmployeeLogic(employeeDal);
-
-            var employeeToUpdate = employeeMock;
-            employeeToUpdate.FirstName = "Test updated";
-            employeeToUpdate.LastName = "Case updated";
-
-            var employeeUpdated = await logic.UpdateAsync(employeeMock.Id, employeeToUpdate);
-
-            Assert.IsTrue(employeeUpdated.Id == employeeMock.Id);
-            Assert.IsTrue(employeeUpdated.FirstName == "Test updated");
-            Assert.IsTrue(employeeUpdated.LastName == "Case updated");
-            Assert.IsTrue(employeeUpdated.RowVersion >= employeeMock.RowVersion);
-        }
-
         [TestMethod()]
         [DataRow(1)]
         public async Task UpdateAsyncNegativeTest1(int employeeId)
         {
-            // Mock IEmployeeDal
-            Mock<IEmployeeDal> mockEmployeeDal = new Mock<IEmployeeDal>();
-
+            // Mock
             Employee employeeMock = FizzWare.NBuilder.Builder<Employee>.CreateNew().Build();
             employeeMock.Id = employeeId;
-
-            mockEmployeeDal
-               .Setup(m => m.GetByIdAsync(employeeId))
-               .Returns(Task.FromResult(employeeMock));
-
-            const int WRONG_ID_THAT_EXISTS = 2;
-            Employee employeeMock2 = FizzWare.NBuilder.Builder<Employee>.CreateNew().Build();
-            employeeMock.Id = WRONG_ID_THAT_EXISTS;
-            mockEmployeeDal
-                          .Setup(m => m.GetByIdAsync(WRONG_ID_THAT_EXISTS))
-                          .Returns(Task.FromResult(employeeMock2));
 
             var employeeUpdatedMock = employeeMock.Clone() as Employee;
             employeeUpdatedMock.FirstName = "Test updated";
             employeeUpdatedMock.LastName = "Case updated";
 
-            mockEmployeeDal
-                .Setup(m => m.UpdateAsync(employeeMock))
-                .Returns(Task.FromResult(employeeUpdatedMock));
-
-            IEmployeeDal employeeDal = mockEmployeeDal.Object;
+            const int WRONG_ID_THAT_EXISTS = 2;
+            var employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+                            .WithGetAll()
+                            .WithGetById(employeeId)
+                            .WithGetById(WRONG_ID_THAT_EXISTS)
+                            .WithUpdate(employeeMock, employeeUpdatedMock)
+                            .AsObject();
 
             // Test
-            var logic = new EmployeeLogic(employeeDal);
+            var logic = new EmployeeLogic(employeeUnitOfwork);
 
             var employeeToUpdate = employeeMock;
             employeeToUpdate.FirstName = "Test updated";
@@ -227,28 +222,22 @@ namespace EmployeeHR.Logic.Tests
         [DataRow(1)]
         public async Task UpdateAsyncNegativeTest2(int employeeId)
         {
-            // Mock IEmployeeDal
-            Mock<IEmployeeDal> mockEmployeeDal = new Mock<IEmployeeDal>();
-
+            // Mock
             Employee employeeMock = FizzWare.NBuilder.Builder<Employee>.CreateNew().Build();
             employeeMock.Id = employeeId;
-
-            mockEmployeeDal
-               .Setup(m => m.GetByIdAsync(employeeId))
-               .Returns(Task.FromResult(employeeMock));
 
             var employeeUpdatedMock = employeeMock.Clone() as Employee;
             employeeUpdatedMock.FirstName = "Test updated";
             employeeUpdatedMock.LastName = "Case updated";
 
-            mockEmployeeDal
-                .Setup(m => m.UpdateAsync(employeeMock))
-                .Returns(Task.FromResult(employeeUpdatedMock));
-
-            IEmployeeDal employeeDal = mockEmployeeDal.Object;
+            var employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+                .WithGetAll()
+                .WithGetById(employeeId)
+                .WithUpdate(employeeMock, employeeUpdatedMock)
+                .AsObject();
 
             // Test
-            var logic = new EmployeeLogic(employeeDal);
+            var logic = new EmployeeLogic(employeeUnitOfwork);
 
             var employeeToUpdate = employeeMock;
             employeeToUpdate.FirstName = "Test updated";
@@ -272,9 +261,7 @@ namespace EmployeeHR.Logic.Tests
         [DataRow(1)]
         public async Task UpdateAsyncNegativeTest3(int employeeId)
         {
-            // Mock IEmployeeDal
-            Mock<IEmployeeDal> mockEmployeeDal = new Mock<IEmployeeDal>();
-
+            // Mock
             Employee employeeMock = FizzWare.NBuilder.Builder<Employee>.CreateNew().Build();
             employeeMock.Id = employeeId;
 
@@ -282,23 +269,20 @@ namespace EmployeeHR.Logic.Tests
             employeeUpdatedMock.FirstName = "Test updated";
             employeeUpdatedMock.LastName = "Case updated";
 
-            mockEmployeeDal
-                .Setup(m => m.UpdateAsync(employeeMock))
-                .Returns(Task.FromResult(employeeUpdatedMock));
-
             // simulate some other user updates same employee before me
             var employeeInOtherThreadUpdated = employeeMock.Clone() as Employee;
             Assert.IsNotNull(employeeInOtherThreadUpdated, "Employee updated in other thread shoudn't be null");
             employeeInOtherThreadUpdated.RowVersion = employeeInOtherThreadUpdated.RowVersion.AddMilliseconds(300);
 
-            mockEmployeeDal
-               .Setup(m => m.GetByIdAsync(employeeId))
-               .Returns(Task.FromResult(employeeInOtherThreadUpdated));
 
-            IEmployeeDal employeeDal = mockEmployeeDal.Object;
+            var employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+                .WithGetAll()
+                .WithGetById(employeeId, employeeInOtherThreadUpdated)
+                .WithUpdate(employeeMock, employeeUpdatedMock)
+                .AsObject();
 
             // Test
-            var logic = new EmployeeLogic(employeeDal);
+            var logic = new EmployeeLogic(employeeUnitOfwork);
 
             var employeeToUpdate = employeeMock;
             employeeToUpdate.FirstName = "Test updated";
@@ -318,107 +302,38 @@ namespace EmployeeHR.Logic.Tests
 
         [TestMethod()]
         [DataRow(1)]
-        public async Task DeleteAsyncTest(int employeeId)
+        public async Task UpdateAsyncTest(int employeeId)
         {
+            // Mock
+            Employee employeeMock = FizzWare.NBuilder.Builder<Employee>.CreateNew().Build();
+            employeeMock.Id = employeeId;
 
-            // Mock IEmployeeDal
-            Mock<IEmployeeDal> mock = new Mock<IEmployeeDal>();
+            var employeeUpdatedMock = employeeMock.Clone() as Employee;
+            employeeUpdatedMock.FirstName = "Test updated";
+            employeeUpdatedMock.LastName = "Case updated";
+            employeeUpdatedMock.RowVersion = employeeUpdatedMock.RowVersion.AddMilliseconds(300);
 
-            var employeesMoke = FizzWare.NBuilder.Builder<Employee>
-                .CreateListOfSize(100)
-                .Build()
-                .AsEnumerable();
+            var employeeToUpdate = employeeMock.Clone() as Employee;
 
-            mock
-                .Setup(m => m.GetAsync())
-                .Returns(Task.FromResult(employeesMoke));
-
-            var employeeToDelete = employeesMoke.FirstOrDefault(e => e.Id == employeeId);
-            Assert.IsTrue(employeeToDelete != null, "Mock data has not been set up correctly");
-
-            mock
-                .Setup(m => m.GetByIdAsync(employeeId))
-                .Returns(Task.FromResult(employeeToDelete));
-
-            mock
-                .Setup(m => m.DeleteAsync(employeeToDelete))
-                .Returns(Task.FromResult(1));
-
-
-            IEmployeeDal employeeDal = mock.Object;
+            IEmployeeUnitOfwork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+                 .WithGetAll()
+                 .WithGetById(employeeId, employeeMock)
+                 .WithUpdate(employeeToUpdate, employeeUpdatedMock)
+                 .AsObject();
 
             // Test
-            var logic = new EmployeeLogic(employeeDal);
+            var logic = new EmployeeLogic(employeeUnitOfwork);
 
-            try
-            {
-                int affectedRecords = await logic.DeleteAsync(employeeId, employeeToDelete);
+            employeeToUpdate.FirstName = "Test updated";
+            employeeToUpdate.LastName = "Case updated";
 
-                Assert.IsTrue(affectedRecords > 0, "Affected records shoud be higher than 0");
-            }
-            catch (CustomException ex)
-            {
-                Assert.IsTrue(ex.StatusCode == System.Net.HttpStatusCode.Conflict);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
+            var employeeUpdated = await logic.UpdateAsync(employeeToUpdate.Id, employeeToUpdate);
+
+            Assert.IsNotNull(employeeUpdated);
+            Assert.IsTrue(employeeUpdated.Id == employeeMock.Id);
+            Assert.IsTrue(employeeUpdated.FirstName == "Test updated");
+            Assert.IsTrue(employeeUpdated.LastName == "Case updated");
+            Assert.IsTrue(employeeUpdated.RowVersion >= employeeMock.RowVersion);
         }
-
-        [TestMethod()]
-        [DataRow(1)]
-        public async Task DeleteAsyncNegativeTest1(int employeeId)
-        {
-            // Mock IEmployeeDal
-            Mock<IEmployeeDal> mock = new Mock<IEmployeeDal>();
-
-            var employeesMoke = FizzWare.NBuilder.Builder<Employee>
-                .CreateListOfSize(100)
-                .Build()
-                .AsEnumerable();
-
-            mock
-                .Setup(m => m.GetAsync())
-                .Returns(Task.FromResult(employeesMoke));
-
-            var employeeToDelete = employeesMoke.FirstOrDefault(e => e.Id == employeeId);
-            Assert.IsTrue(employeeToDelete != null, "Mock data has not been set up correctly");
-
-            // simulate some other user updates same employee before me
-            var employeeInOtherThreadUpdated = employeeToDelete.Clone() as Employee;
-            Assert.IsNotNull(employeeInOtherThreadUpdated, "Employee updated in other thread shoudn't be null");
-            employeeInOtherThreadUpdated.RowVersion = employeeInOtherThreadUpdated.RowVersion.AddMilliseconds(300);
-
-            mock
-                .Setup(m => m.GetByIdAsync(employeeId))
-                .Returns(Task.FromResult(employeeInOtherThreadUpdated));
-
-            mock
-                .Setup(m => m.DeleteAsync(employeeToDelete))
-                .Returns(Task.FromResult(1));
-
-
-            IEmployeeDal employeeDal = mock.Object;
-
-            // Test
-            var logic = new EmployeeLogic(employeeDal);
-
-            try
-            {
-                int affectedRecords = await logic.DeleteAsync(employeeId, employeeToDelete);
-
-                Assert.Fail("Employee shoudn't have been updated");
-            }
-            catch (CustomException ex)
-            {
-                Assert.IsTrue(ex.StatusCode == System.Net.HttpStatusCode.Conflict);
-            }
-            catch (Exception ex)
-            {
-                Assert.Fail(ex.Message);
-            }
-        }
-
     }
 }

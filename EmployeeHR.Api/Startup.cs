@@ -56,7 +56,7 @@ namespace EmployeeHR.Api
                             .AllowCredentials()
                             .SetPreflightMaxAge(TimeSpan.FromSeconds(86400)); // CORS preflight request: Access-Control-Max-Age gives the value in seconds for how long the response to the preflight request can be cached for without sending another preflight request. In this case, 86400 seconds is 24 hours.
                         }
-                    ); ;
+                    );
                 }
             );
 
@@ -73,6 +73,9 @@ namespace EmployeeHR.Api
                         x => x.MigrationsAssembly("EmployeeHR.EF")));
 
             services.AddScoped<IEmployeeDal, EmployeeDal>();
+
+            services.AddScoped<IEmployeeUnitOfwork, EmployeeUnitOfwork>();
+
             services.AddScoped<IEmployeeLogic, EmployeeLogic>();
 
             services.AddSwaggerGen(c =>

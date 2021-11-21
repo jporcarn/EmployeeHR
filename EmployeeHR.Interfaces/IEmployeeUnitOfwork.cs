@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace EmployeeHR.Interfaces
 {
-    public interface IEmployeeDal : IDisposable
+    public interface IEmployeeUnitOfwork : IDisposable
     {
-        Task<int> AddAsync(Employee employee);
+        Task<Employee> AddAsync(Employee employee);
 
         Task<int> DeleteAsync(Employee employee);
 
@@ -15,6 +15,6 @@ namespace EmployeeHR.Interfaces
 
         Task<Employee> GetByIdAsync(int id);
 
-        Task<int> UpdateAsync(Employee employee);
+        Task<Employee> UpdateAsync(Employee employee);
     }
 }

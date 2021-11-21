@@ -1,34 +1,32 @@
 ﻿using EmployeeHR.Dto;
 using EmployeeHR.Interfaces;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace EmployeeHR.Logic
 {
     public class EmployeeLogic : IEmployeeLogic
     {
-        private readonly IEmployeeDal _employeeDal;
+        private readonly IEmployeeUnitOfwork _employeeUnitOfwork;
 
-        public EmployeeLogic(IEmployeeDal employeeDal)
+        public EmployeeLogic(IEmployeeUnitOfwork employeeUnitOfwork)
         {
-            this._employeeDal = employeeDal;
+
+            this._employeeUnitOfwork = employeeUnitOfwork;
         }
 
         public async Task<Employee> AddAsync(Employee employee)
         {
             // TODO: Validations
 
-            var employeeAdded = await this._employeeDal.AddAsync(employee);
+            var employeeAdded = await this._employeeUnitOfwork.AddAsync(employee);
 
             return employeeAdded;
         }
 
         public async Task<int> DeleteAsync(int id, Employee employee)
         {
-            var employeeOriginal = await this._employeeDal.GetByIdAsync(id);
+            var employeeOriginal = await this._employeeUnitOfwork.GetByIdAsync(id);
 
             // Validations
             if (employeeOriginal == null)
@@ -47,28 +45,28 @@ namespace EmployeeHR.Logic
                 throw new CustomException("Data has changed recently. Please refresh your data to get latest changes and try again") { StatusCode = System.Net.HttpStatusCode.Conflict };
             }
 
-            int affectedRecords = await this._employeeDal.DeleteAsync(employee);
+            int affectedRecords = await this._employeeUnitOfwork.DeleteAsync(employee);
 
             return affectedRecords;
         }
 
         public async Task<IEnumerable<Employee>> GetAsync()
         {
-            var employees = await this._employeeDal.GetAsync();
+            var employees = await this._employeeUnitOfwork.GetAsync();
 
             return employees;
         }
 
         public async Task<Employee> GetByIdAsync(int id)
         {
-            var employee = await this._employeeDal.GetByIdAsync(id);
+            var employee = await this._employeeUnitOfwork.GetByIdAsync(id);
 
             return employee;
         }
 
         public async Task<Employee> UpdateAsync(int id, Employee employee)
         {
-            var employeeOriginal = await this._employeeDal.GetByIdAsync(id);
+            var employeeOriginal = await this._employeeUnitOfwork.GetByIdAsync(id);
 
             // Validations
             if (employeeOriginal == null)
@@ -88,7 +86,7 @@ namespace EmployeeHR.Logic
                 throw new CustomException("Data has changed recently. Please refresh your data to get latest changes and try again") { StatusCode = System.Net.HttpStatusCode.Conflict };
             }
 
-            var employeeUpdated = await this._employeeDal.UpdateAsync(employee);
+            var employeeUpdated = await this._employeeUnitOfwork.UpdateAsync(employee);
 
             return employeeUpdated;
         }

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31205.134
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHR.Api", "EmployeeHR.Api\EmployeeHR.Api.csproj", "{F93EFCC9-D67C-4181-9604-7E0042069F0E}"
 EndProject
@@ -36,7 +36,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "09. Tests", "09. Tests", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHR.Api.IntegrationTests", "EmployeeHR.Api.IntegrationTests\EmployeeHR.Api.IntegrationTests.csproj", "{AF362A62-F42B-4A2A-B485-1F1036865198}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EmployeeHR.Tests", "EmployeeHR.Tests\EmployeeHR.Tests.csproj", "{4D55AE0F-7FC5-494D-9922-719E2A53104D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHR.Tests", "EmployeeHR.Tests\EmployeeHR.Tests.csproj", "{4D55AE0F-7FC5-494D-9922-719E2A53104D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
