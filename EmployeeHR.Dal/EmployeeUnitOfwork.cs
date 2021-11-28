@@ -10,44 +10,58 @@ namespace EmployeeHR.Dal
     public class EmployeeUnitOfwork : IEmployeeUnitOfwork
     {
         private readonly EmployeeHRDbContext _context;
-        private readonly IEmployeeDal _employeeDal;
+
+        private IEmployeeDal _employeeDal;
+        public IEmployeeDal EmployeeDal
+        {
+            get
+            {
+
+                if (this._employeeDal == null)
+                {
+                    this._employeeDal = new EmployeeDal(this._context);
+                }
+
+                return this._employeeDal;
+            }
+        }
 
 
         public EmployeeUnitOfwork(EmployeeHRDbContext context)
         {
             this._context = context;
-            this._employeeDal = new EmployeeDal(this._context);
+
         }
 
         public async Task<Employee> AddAsync(Employee employee)
         {
             employee.Id = 0;
-            await this._employeeDal.AddAsync(employee);
+            await this.EmployeeDal.AddAsync(employee);
 
-            var employeeAdded = await this._employeeDal.GetByIdAsync(employee.Id);
+            var employeeAdded = await this.EmployeeDal.GetByIdAsync(employee.Id);
             return employeeAdded;
         }
 
         public Task<int> DeleteAsync(Employee employee)
         {
-            return this._employeeDal.DeleteAsync(employee);
+            return this.EmployeeDal.DeleteAsync(employee);
         }
 
         public Task<IEnumerable<Employee>> GetAsync()
         {
-            return this._employeeDal.GetAsync();
+            return this.EmployeeDal.GetAsync();
         }
 
         public Task<Employee> GetByIdAsync(int id)
         {
-            return this._employeeDal.GetByIdAsync(id);
+            return this.EmployeeDal.GetByIdAsync(id);
         }
 
         public async Task<Employee> UpdateAsync(Employee employee)
         {
-            await this._employeeDal.UpdateAsync(employee);
+            await this.EmployeeDal.UpdateAsync(employee);
 
-            var employeeAdded = await this._employeeDal.GetByIdAsync(employee.Id);
+            var employeeAdded = await this.EmployeeDal.GetByIdAsync(employee.Id);
             return employeeAdded;
 
         }
@@ -55,6 +69,8 @@ namespace EmployeeHR.Dal
 
         #region IDisposable
         private bool disposedValue;
+
+
         public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
@@ -69,7 +85,7 @@ namespace EmployeeHR.Dal
                 if (disposing)
                 {
                     // dispose managed state (managed objects)
-                    this._employeeDal.Dispose();
+                    this.EmployeeDal.Dispose();
 
                 }
 
