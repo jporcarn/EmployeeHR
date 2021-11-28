@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace EmployeeHR.Interfaces
 {
-    public interface IEmployeeUnitOfwork : IDisposable
+    public interface IEmployeeUnitOfWork : IDisposable
     {
         Task<Employee> AddAsync(Employee employee);
 

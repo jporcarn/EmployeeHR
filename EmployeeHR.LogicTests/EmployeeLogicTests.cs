@@ -42,7 +42,7 @@ namespace EmployeeHR.Logic.Tests
             // Mock
             Employee employeeToAdd = FizzWare.NBuilder.Builder<Employee>.CreateNew().Build();
 
-            IEmployeeUnitOfwork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+            IEmployeeUnitOfWork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
                  .WithGetAll()
                  .WithAdd(employeeToAdd)
                  .WithGetById(employeeToAdd.Id + 1)
@@ -68,7 +68,7 @@ namespace EmployeeHR.Logic.Tests
             Employee employeeToDeleteMock = FizzWare.NBuilder.Builder<Employee>.CreateNew().Build();
             employeeToDeleteMock.Id = employeeId;
 
-            IEmployeeUnitOfwork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+            IEmployeeUnitOfWork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
                  .WithGetAll()
                  .WithGetById(employeeId)
                  .WithDelete(employeeToDeleteMock)
@@ -117,7 +117,7 @@ namespace EmployeeHR.Logic.Tests
             Employee employeeToDeleteMock = FizzWare.NBuilder.Builder<Employee>.CreateNew().Build();
             employeeToDeleteMock.Id = employeeId;
 
-            IEmployeeUnitOfwork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+            IEmployeeUnitOfWork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
                  .WithGetAll()
                  .WithGetById(employeeId)
                  .WithDelete(employeeToDeleteMock)
@@ -146,7 +146,7 @@ namespace EmployeeHR.Logic.Tests
         public async Task GetAsyncTest()
         {
             // Mock
-            IEmployeeUnitOfwork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+            IEmployeeUnitOfWork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
                 .WithGetAll()
                 .AsObject();
 
@@ -162,7 +162,7 @@ namespace EmployeeHR.Logic.Tests
         public async Task GetByIdAsyncTest(int employeeId)
         {
             // Mock
-            IEmployeeUnitOfwork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+            IEmployeeUnitOfWork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
                  .WithGetAll()
                  .WithGetById(employeeId)
                  .AsObject();
@@ -315,7 +315,7 @@ namespace EmployeeHR.Logic.Tests
 
             var employeeToUpdate = employeeMock.Clone() as Employee;
 
-            IEmployeeUnitOfwork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
+            IEmployeeUnitOfWork employeeUnitOfwork = new FluentEmployeeUnitOfworkMock()
                  .WithGetAll()
                  .WithGetById(employeeId, employeeMock)
                  .WithUpdate(employeeToUpdate, employeeUpdatedMock)

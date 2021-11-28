@@ -99,6 +99,10 @@ namespace EmployeeHR.Api.Controllers.IntegrationTests
 
             var orderedExpectedEmployees = this._expectedEmployees.OrderBy(e => e.Id);
             var orderedEmployees = model?.OrderBy(ae => ae.Id).Take(10).OrderBy(ae => ae.Id);
+
+            var result = orderedExpectedEmployees.Where(e => !orderedEmployees.Any(e2 => e2.Id != e.Id));
+            Assert.False(result.Any());
+
             Assert.True(orderedExpectedEmployees.SequenceEqual(orderedEmployees));
         }
 

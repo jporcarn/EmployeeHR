@@ -20,5 +20,36 @@ namespace EmployeeHR.Dal.Tests
 
             return dbContext;
         }
+
+        internal static TestDbContextFactory CreateDbContextFactory(IConfiguration configuration)
+        {
+            var factory = new TestDbContextFactory(configuration);
+            return factory;
+        }
+
+
+        internal class TestDbContextFactory : IDbContextFactory<EmployeeHRDbContext>
+        {
+            private readonly IConfiguration _configuration;
+
+            public TestDbContextFactory(IConfiguration configuration)
+            {
+                this._configuration = configuration;
+            }
+
+            public EmployeeHRDbContext CreateDbContext()
+            {
+                string connectionString = this._configuration.GetConnectionString("DefaultConnection");
+                var optionsBuilder = new DbContextOptionsBuilder<EmployeeHRDbContext>();
+                optionsBuilder.UseSqlServer(connectionString);
+
+                var options = optionsBuilder.Options;
+                var dbContext = new EmployeeHRDbContext(options);
+
+                dbContext.Database.Migrate();
+
+                return dbContext;
+            }
+        }
     }
 }

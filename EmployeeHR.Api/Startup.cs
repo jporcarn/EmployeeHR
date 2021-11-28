@@ -68,13 +68,21 @@ namespace EmployeeHR.Api
 
             services.AddHealthChecks();
 
+            services.AddDbContextFactory<EmployeeHRDbContext>(
+                (options) =>
+                {
+                    options.UseSqlServer("name=ConnectionStrings:DefaultConnection", x => x.MigrationsAssembly("EmployeeHR.EF"));
+                });
+
             services.AddDbContext<EmployeeHRDbContext>(
-                options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection",
-                        x => x.MigrationsAssembly("EmployeeHR.EF")));
+                (options) =>
+                {
+                    options.UseSqlServer("name=ConnectionStrings:DefaultConnection", x => x.MigrationsAssembly("EmployeeHR.EF"));
+                });
 
             services.AddScoped<IEmployeeDal, EmployeeDal>();
 
-            services.AddScoped<IEmployeeUnitOfwork, EmployeeUnitOfwork>();
+            services.AddScoped<IEmployeeUnitOfWork, EmployeeUnitOfWork>();
 
             services.AddScoped<IEmployeeLogic, EmployeeLogic>();
 

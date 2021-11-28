@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 namespace EmployeeHR.Tests
 {
 
-    public class FluentEmployeeUnitOfworkMock : IFluentMock<IEmployeeUnitOfwork>
+    public class FluentEmployeeUnitOfworkMock : IFluentMock<IEmployeeUnitOfWork>
     {
-        private Mock<IEmployeeUnitOfwork> unitOfWorkMock = new Mock<IEmployeeUnitOfwork>();
+        private Mock<IEmployeeUnitOfWork> unitOfWorkMock = new Mock<IEmployeeUnitOfWork>();
 
-        public IEmployeeUnitOfwork AsObject()
+        public IEmployeeUnitOfWork AsObject()
         {
-            IEmployeeUnitOfwork unitOfWork = unitOfWorkMock.Object;
+            IEmployeeUnitOfWork unitOfWork = unitOfWorkMock.Object;
 
             return unitOfWork;
         }

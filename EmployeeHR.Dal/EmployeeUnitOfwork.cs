@@ -1,15 +1,32 @@
 ﻿using EmployeeHR.Dto;
 using EmployeeHR.EF;
 using EmployeeHR.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace EmployeeHR.Dal
 {
-    public class EmployeeUnitOfwork : IEmployeeUnitOfwork
+    public class EmployeeUnitOfWork : IEmployeeUnitOfWork
     {
-        private readonly EmployeeHRDbContext _context;
+        private readonly IDbContextFactory<EmployeeHRDbContext> _contextFactory;
+
+        private EmployeeHRDbContext _context;
+
+        public EmployeeHRDbContext Context
+        {
+            get
+            {
+                if (this._context == null)
+                {
+                    this._context = this._contextFactory.CreateDbContext();
+                }
+
+                return this._context;
+            }
+
+        }
 
         private IEmployeeDal _employeeDal;
         public IEmployeeDal EmployeeDal
@@ -19,7 +36,7 @@ namespace EmployeeHR.Dal
 
                 if (this._employeeDal == null)
                 {
-                    this._employeeDal = new EmployeeDal(this._context);
+                    this._employeeDal = new EmployeeDal(this.Context);
                 }
 
                 return this._employeeDal;
@@ -27,10 +44,9 @@ namespace EmployeeHR.Dal
         }
 
 
-        public EmployeeUnitOfwork(EmployeeHRDbContext context)
+        public EmployeeUnitOfWork(IDbContextFactory<EmployeeHRDbContext> contextFactory)
         {
-            this._context = context;
-
+            this._contextFactory = contextFactory;
         }
 
         public async Task<Employee> AddAsync(Employee employee)
@@ -86,6 +102,7 @@ namespace EmployeeHR.Dal
                 {
                     // dispose managed state (managed objects)
                     this.EmployeeDal.Dispose();
+                    this.Context.Dispose();
 
                 }
 

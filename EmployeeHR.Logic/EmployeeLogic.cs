@@ -7,9 +7,9 @@ namespace EmployeeHR.Logic
 {
     public class EmployeeLogic : IEmployeeLogic
     {
-        private readonly IEmployeeUnitOfwork _employeeUnitOfwork;
+        private readonly IEmployeeUnitOfWork _employeeUnitOfwork;
 
-        public EmployeeLogic(IEmployeeUnitOfwork employeeUnitOfwork)
+        public EmployeeLogic(IEmployeeUnitOfWork employeeUnitOfwork)
         {
 
             this._employeeUnitOfwork = employeeUnitOfwork;

@@ -19,9 +19,10 @@ namespace EmployeeHR.Dto
 
         public bool Equals(Employee other)
         {
-            return this.Id.Equals(other.Id) &&
-                this.FirstName.Equals(other.FirstName) &&
-                this.LastName.Equals(other.LastName);
+            bool isEqual = this.Id.Equals(other.Id) &&
+                            this.FirstName.Equals(other.FirstName) &&
+                            this.LastName.Equals(other.LastName);
+            return isEqual;
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using EmployeeHR.Dto;
 using EmployeeHR.EF;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
@@ -7,12 +8,12 @@ using System.Threading.Tasks;
 namespace EmployeeHR.Dal.Tests
 {
     [TestClass()]
-    public class EmployeeUnitOfworkTests
+    public class EmployeeUnitOfWorkTests
     {
 
         public static IConfiguration Configuration { get; private set; }
         public static EmployeeHRDbContext DbContext { get; private set; }
-
+        public static IDbContextFactory<EmployeeHRDbContext> DbContextFactory { get; private set; }
 
         [ClassCleanup] // free resources obtained by all the tests in the test class.
         public static async Task Cleanup()
@@ -32,6 +33,8 @@ namespace EmployeeHR.Dal.Tests
 
             Configuration = context.Properties["configuration"] as IConfiguration;
             DbContext = await Helper.CreateDbContextAsync(Configuration);
+
+            DbContextFactory = Helper.CreateDbContextFactory(Configuration);
         }
 
         [TestMethod()]
@@ -42,7 +45,7 @@ namespace EmployeeHR.Dal.Tests
 
             // Test
 
-            var unitOfWork = new EmployeeUnitOfwork(DbContext);
+            var unitOfWork = new EmployeeUnitOfWork(DbContextFactory);
 
             var employeeAdded = await unitOfWork.AddAsync(employeeToAddMock);
 
