@@ -34,14 +34,6 @@ stages:
         inputs:
           platform: '$(buildPlatform)'
           configuration: '$(buildConfiguration)'
-      
-      # - task: ArchiveFiles@2
-      #   inputs:
-      #       rootFolderOrFile: '$(Build.ArtifactStagingDirectory)\Epsilon4Package'
-      #       includeRootFolder: false
-      #       archiveType: 'zip'
-      #       archiveFile: '$(Build.ArtifactStagingDirectory)\Epsilon4.zip'
-      #       replaceExistingArchive: true
 
       - task: PublishBuildArtifacts@1
         inputs:
