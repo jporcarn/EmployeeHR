@@ -38,6 +38,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHR.Api.IntegrationT
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EmployeeHR.Tests", "EmployeeHR.Tests\EmployeeHR.Tests.csproj", "{4D55AE0F-7FC5-494D-9922-719E2A53104D}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{AFD1A45A-7BBB-43EF-A4AE-9CA8D956987C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{058223D3-F39A-410A-A1A6-309D7D28A17F}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\dotnet.yml = .github\workflows\dotnet.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +106,8 @@ Global
 		{25B7FC97-B447-4AE1-900F-62D81055B6D7} = {2AE76E54-034E-4F9B-B07B-877BC8DFA75F}
 		{AF362A62-F42B-4A2A-B485-1F1036865198} = {2AE76E54-034E-4F9B-B07B-877BC8DFA75F}
 		{4D55AE0F-7FC5-494D-9922-719E2A53104D} = {2AE76E54-034E-4F9B-B07B-877BC8DFA75F}
+		{AFD1A45A-7BBB-43EF-A4AE-9CA8D956987C} = {645FA3EF-7303-4B6D-86A5-6537DE82C00C}
+		{058223D3-F39A-410A-A1A6-309D7D28A17F} = {AFD1A45A-7BBB-43EF-A4AE-9CA8D956987C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A1891979-4604-4CB6-B256-DD33A57BDE71}
