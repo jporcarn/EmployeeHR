@@ -34,11 +34,15 @@ jobs:
           dotnet-version: 5.0.x
       - name: Publish
         run: dotnet publish EmployeeHR.Api/EmployeeHR.Api.csproj -p:PublishProfile=FolderProfile  --configuration Release --output public
+      - name: Display structure of published files
+        run: ls -R        
       - name: Upload EmployeeHR.Api build artifact
         uses: actions/upload-artifact@master
         with:
-          name: dotnet artifacts
+          name: dotnet-artifact
           path: public/
+      - name: Display structure of uploaded files
+        run: ls -R          
 
   test-artifacts:
     runs-on: ubuntu-latest
@@ -48,5 +52,7 @@ jobs:
       - name: Download EmployeeHR.Api published artifact
         uses: actions/download-artifact@master
         with:
-          name: download artifacts
+          name: dotnet-artifact
           path: public
+      - name: Display structure of downloaded files
+        run: ls -R          
