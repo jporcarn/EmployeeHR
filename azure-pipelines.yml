@@ -27,7 +27,7 @@ stages:
       - task: VSBuild@1
         inputs:
           solution: '$(solution)'
-          msbuildArgs: '/p:DeployOnBuild=true /p:DeployDefaultTarget=WebPublish /p:WebPublishMethod=FileSystem /p:publishUrl=$(Build.ArtifactStagingDirectory)\EmployeeHR.Api'
+          msbuildArgs: '/p:DeployOnBuild=true /p:PublishProfile=FolderProfile.pubxml /p:publishUrl=$(Build.ArtifactStagingDirectory)\EmployeeHR.Api'
           platform: '$(buildPlatform)'
           configuration: '$(buildConfiguration)'
       - task: VSTest@2
